@@ -11,6 +11,7 @@ public class Options {
   private boolean useShortForm;
   private Consumer<CurlCommand> curlUpdater;
   private Platform targetPlatform = Platform.RECOGNIZE_AUTOMATICALLY;
+  private boolean escapeNonAscii;
 
   private Options() {
   }
@@ -25,6 +26,10 @@ public class Options {
 
   public boolean printMultiliner() {
     return printMultiliner;
+  }
+
+  public boolean escapeNonAscii() {
+    return escapeNonAscii;
   }
 
   public boolean useShortForm() {
@@ -101,11 +106,27 @@ public class Options {
     }
 
     /**
-     * Confirgure the library to print curl command that will be executable on a given {@code
+     * Configure the library to print curl command that will be executable on a given {@code
      * targetPlatform}.
      */
     public Builder targetPlatform(Platform targetPlatform) {
       options.targetPlatform = targetPlatform;
+      return this;
+    }
+
+    /**
+     * Enable escaping non ASCII characters for POSIX platforms.
+     */
+    public Builder escapeNonAscii() {
+      options.escapeNonAscii = true;
+      return this;
+    }
+
+    /**
+     * Disable escaping non ASCII characters for POSIX platforms.
+     */
+    public Builder dontEscapeNonAscii() {
+      options.escapeNonAscii = false;
       return this;
     }
 

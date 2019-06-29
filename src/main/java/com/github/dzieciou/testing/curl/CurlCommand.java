@@ -42,13 +42,12 @@ import java.util.stream.Collectors;
 
 /**
  * Represents curl command and provides a way to serialize it through {@link #asString(Platform,
- * boolean, boolean)} method.
+` * boolean, boolean, boolean)} method.
  */
 public class CurlCommand {
 
   private final List<Header> headers = new ArrayList<>();
   private final List<FormPart> formParts = new ArrayList<>();
-  private final List<String> datas = new ArrayList<>();
   private final List<String> datasBinary = new ArrayList<>();
   private String url;
   private Optional<String> cookieHeader = Optional.empty();
@@ -75,11 +74,6 @@ public class CurlCommand {
 
   public CurlCommand addFormPart(String name, String content) {
     formParts.add(new FormPart(name, content));
-    return this;
-  }
-
-  public CurlCommand addData(String data) {
-    datas.add(data);
     return this;
   }
 
@@ -120,11 +114,15 @@ public class CurlCommand {
 
   @Override
   public String toString() {
-    return asString(Platform.RECOGNIZE_AUTOMATICALLY, false, true);
+    return asString(Platform.RECOGNIZE_AUTOMATICALLY, false, true, true);
   }
 
-  public String asString(Platform targetPlatform, boolean useShortForm, boolean printMultiliner) {
-    return new Serializer(targetPlatform, useShortForm, printMultiliner).serialize(this);
+  public String asString(Platform targetPlatform, boolean useShortForm, boolean printMultiliner, boolean escapeNonAscii) {
+    return new Serializer(targetPlatform, useShortForm, printMultiliner, escapeNonAscii).serialize(this);
+  }
+
+  public boolean hasData() {
+    return  !datasBinary.isEmpty();
   }
 
   public static class Header {
@@ -190,6 +188,7 @@ public class CurlCommand {
     private final Platform targetPlatform;
     private final boolean useShortForm;
     private final boolean printMultiliner;
+    private final boolean escapeNonAscii;
 
     static {
       SHORT_PARAMETER_NAMES.put("--user", "-u");
@@ -202,10 +201,12 @@ public class CurlCommand {
       SHORT_PARAMETER_NAMES.put("--verbose", "-v");
     }
 
-    public Serializer(Platform targetPlatform, boolean useShortForm, boolean printMultiliner) {
+
+    public Serializer(Platform targetPlatform, boolean useShortForm, boolean printMultiliner, boolean escapeNonAscii) {
       this.targetPlatform = targetPlatform;
       this.useShortForm = useShortForm;
       this.printMultiliner = printMultiliner;
+      this.escapeNonAscii = escapeNonAscii;
     }
 
     private static String parameterName(String longParameterName, boolean useShortForm) {
@@ -237,6 +238,8 @@ public class CurlCommand {
      * Replace new line outside of quotes since cmd.exe doesn't let to do it inside.
      */
     private static String escapeStringWin(String s) {
+      // Escaping non-printable ASCII characters is limited only to few characters
+      // Escaping non-ASCII characters is not supported
       return "\""
           + s
           .replaceAll("\"", "\"\"")
@@ -246,29 +249,52 @@ public class CurlCommand {
           + "\"";
     }
 
-    private static String escapeStringPosix(String s) {
+    private String escapeStringPosix(String s) {
 
-      if (s.matches("^.*([^\\x20-\\x7E]|\').*$")) {
-        // Use ANSI-C quoting syntax.
-        String escaped = s
-            .replaceAll("\\\\", "\\\\")
-            .replaceAll("'", "\\'")
-            .replaceAll("\n", "\\n")
-            .replaceAll("\r", "\\r");
+      String escaped = s.chars()
+          .mapToObj(c -> escape((char) c))
+          .collect(Collectors.joining());
 
-        escaped = escaped.chars()
-            .mapToObj(c -> escapeCharacter((char) c))
-            .collect(Collectors.joining());
-
+      if (!escaped.equals(s)) {
+        // ANSI-C Quoting performed
         return "$\'" + escaped + "'";
       } else {
-        // Use single quote syntax.
-        return "'" + s + "'";
+        return "'" + escaped + "'";
       }
 
     }
 
-    private static String escapeCharacter(char c) {
+    private String escape(char c) {
+      if (isAscii(c)) {
+        // Perform ANSI-C Quoting for ASCII characters
+        // https://www.gnu.org/software/bash/manual/html_node/ANSI_002dC-Quoting.html
+        switch(c) {
+          case '\n': return "\\n";
+          case '\'': return "\\'";
+          case '\t': return "\\t";
+          case '\r': return "\\r";
+          // '@' character has a special meaning in --data-binary (loadin a file)
+          // So we need to escape it
+          case '@': return escapeAsHex(c);
+          default:
+            return isAsciiPrintable(c) ? String.valueOf(c) : escapeAsHex(c);
+        }
+      } else {
+        // Perform ANSI-C Quoting for non-ASCII characters
+        // https://www.gnu.org/software/bash/manual/html_node/ANSI_002dC-Quoting.html
+        return this.escapeNonAscii ? escapeAsHex(c) : String.valueOf(c);
+      }
+    }
+
+    private static boolean isAscii(char c) {
+      return c <= 127;
+    }
+
+    private static boolean isAsciiPrintable(char c) {
+      return c >= 32 && c < 127;
+    }
+
+    private static String escapeAsHex(char c) {
       int code = (int) c;
       String codeAsHex = Integer.toHexString(code);
       if (code < 256) {
@@ -282,29 +308,27 @@ public class CurlCommand {
       List<List<String>> command = new ArrayList<>();
 
       command
-          .add(line(useShortForm, "curl", escapeString(curl.url).replaceAll("[[{}\\\\]]", "\\$&")));
+          .add(line(useShortForm, "curl", quoteString(curl.url).replaceAll("[[{}\\\\]]", "\\$&")));
 
       curl.method.ifPresent(method -> command.add(line(useShortForm, "--request", method)));
 
       curl.cookieHeader.ifPresent(
-          cookieHeader -> command.add(line(useShortForm, "--cookie", escapeString(cookieHeader))));
+          cookieHeader -> command.add(line(useShortForm, "--cookie", quoteString(cookieHeader))));
 
       curl.headers.forEach(header
           -> command.add(line(useShortForm, "--header",
-          escapeString(header.getName() + ": " + header.getValue()))));
+          quoteString(header.getName() + ": " + header.getValue()))));
 
       curl.formParts.forEach(formPart
           -> command.add(line(useShortForm, "--form",
-          escapeString(formPart.getName() + "=" + formPart.getContent()))));
-
-      curl.datas.forEach(data -> command.add(line(useShortForm, "--data", escapeString(data))));
+          quoteString(formPart.getName() + "=" + formPart.getContent()))));
 
       curl.datasBinary
           .forEach(data -> command.add(line(useShortForm, "--data-binary", escapeString(data))));
 
       curl.serverAuthentication.ifPresent(sa
           -> command
-          .add(line(useShortForm, "--user", escapeString(sa.getUser() + ":" + sa.getPassword()))));
+          .add(line(useShortForm, "--user", quoteString(sa.getUser() + ":" + sa.getPassword()))));
 
       if (curl.compressed) {
         command.add(line(useShortForm, "--compressed"));
@@ -331,6 +355,23 @@ public class CurlCommand {
     private String escapeString(String s) {
       // cURL command is expected to run on the same platform that test run
       return targetPlatform.isOsWindows() ? escapeStringWin(s) : escapeStringPosix(s);
+    }
+
+    private String quoteString(String s) {
+      // cURL command is expected to run on the same platform that test run
+      return targetPlatform.isOsWindows() ? quoteStringWin(s) : quoteStringPosix(s);
+    }
+
+    private static String quoteStringWin(String s) {
+      return "\""
+          + s
+          + "\"";
+    }
+
+    private static String quoteStringPosix(String s) {
+      return "'"
+          + s
+          + "'";
     }
   }
 

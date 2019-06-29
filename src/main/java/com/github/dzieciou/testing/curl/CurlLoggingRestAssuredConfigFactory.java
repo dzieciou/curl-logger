@@ -64,6 +64,7 @@ public class CurlLoggingRestAssuredConfigFactory {
         .dontLogStacktrace()
         .printSingleliner()
         .useShortForm()
+        .escapeNonAscii()
         .build();
   }
 

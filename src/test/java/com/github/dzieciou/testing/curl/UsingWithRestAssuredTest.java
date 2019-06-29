@@ -13,13 +13,18 @@ import static org.mockserver.model.HttpResponse.response;
 
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
+import io.restassured.http.ContentType;
 import io.restassured.http.Cookie;
 import io.restassured.http.Cookies;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
@@ -40,6 +45,7 @@ public class UsingWithRestAssuredTest {
   private static final String MOCK_BASE_URI = "http://" + MOCK_HOST;
 
   private MockServerClient mockServer;
+  private TemporaryFolder tempFolder;
 
   private RestAssuredConfig getRestAssuredConfig(Consumer<String> curlConsumer) {
     return config()
@@ -48,7 +54,8 @@ public class UsingWithRestAssuredTest {
   }
 
   @BeforeClass
-  public void setupMock() {
+  public void setupMock() throws IOException {
+    tempFolder = new TemporaryFolder();
     mockServer = startClientAndServer(MOCK_PORT);
     mockServer.when(request()).respond(response());
   }
@@ -186,6 +193,49 @@ public class UsingWithRestAssuredTest {
   }
 
   @Test(groups = "end-to-end-samples")
+  public void shouldPrintBody() {
+
+    Consumer<String> curlConsumer = mock(Consumer.class);
+
+    //@formatter:off
+    given()
+        .baseUri(MOCK_BASE_URI)
+        .port(MOCK_PORT)
+        .config(getRestAssuredConfig(curlConsumer))
+        .contentType(ContentType.JSON)
+        .body("name=Administração")
+        .when().post("/");
+    //@formatter:on
+
+    verify(curlConsumer).accept(
+        "curl 'http://localhost:" + MOCK_PORT
+            + "/' -H 'Accept: */*' -H 'Content-Type: application/json; charset=UTF-8' --data-binary 'name=Administração' --compressed -k -v");
+  }
+
+
+
+  @Test(groups = "end-to-end-samples")
+  public void shouldPrintBodyWithEncoding() {
+
+    Consumer<String> curlConsumer = mock(Consumer.class);
+
+    //@formatter:off
+    given()
+        .baseUri(MOCK_BASE_URI)
+        .port(MOCK_PORT)
+        .config(getRestAssuredConfig(curlConsumer))
+        .contentType(ContentType.JSON)
+        .body("{\n'name':\"CKB2\",'salary':'123','age':'23'\n}")
+        .when().post("/");
+    //@formatter:on
+
+    verify(curlConsumer).accept(
+        "curl 'http://localhost:" + MOCK_PORT
+            + "/' -H 'Accept: */*' -H 'Content-Type: application/json; charset=UTF-8' --data-binary "
+            + "$'{\\n\\'name\\':\"CKB2\",\\'salary\\':\\'123\\',\\'age\\':\\'23\\'\\n}' --compressed -k -v");
+  }
+
+  @Test(groups = "end-to-end-samples")
   public void shouldPrintMultipartWithContentTypesForTypes() {
 
     Consumer<String> curlConsumer = mock(Consumer.class);
@@ -225,9 +275,75 @@ public class UsingWithRestAssuredTest {
             + "/' -X POST -H 'Accept: */*' -H 'Content-Type: multipart/mixed' -F 'myfile=@README.md;type=application/json' --compressed -k -v");
   }
 
+  @Test
+  public void shouldPrintFileAsBinary() throws IOException {
+    Consumer<String> curlConsumer = mock(Consumer.class);
+
+    File tempFile = tempFolder.createFile().toFile();
+    FileUtils.writeStringToFile(tempFile,
+        "{ 'message' : 'hello world'}", Charset.defaultCharset());
+
+    //@formatter:off
+    given()
+        .baseUri(MOCK_BASE_URI)
+        .port(MOCK_PORT)
+        .config(getRestAssuredConfig(curlConsumer))
+        .body(tempFile)
+        .when().post("/");
+    //@formatter:on
+
+    verify(curlConsumer).accept(
+        "curl 'http://localhost:" + MOCK_PORT
+            + "/' -H 'Accept: */*' -H 'Content-Type: text/plain; charset=ISO-8859-1' --data-binary $'{ \\'message\\' : \\'hello world\\'}' --compressed -k -v");
+  }
+
+  @Test
+  public void shouldPrintForm() {
+    Consumer<String> curlConsumer = mock(Consumer.class);
+
+    //@formatter:off
+    given()
+        .baseUri(MOCK_BASE_URI)
+        .port(MOCK_PORT)
+        .config(getRestAssuredConfig(curlConsumer))
+        .formParam("birthyear","1905")
+        .formParam("invitation","I am Daniel")
+        .when().post("/");
+    //@formatter:on
+
+    verify(curlConsumer).accept(
+        "curl 'http://localhost:" + MOCK_PORT
+            + "/' -H 'Accept: */*' -H 'Content-Type: application/x-www-form-urlencoded; charset=ISO-8859-1' --data-binary 'birthyear=1905&invitation=I%20am%20Daniel' --compressed -k -v");
+  }
+
+  @Test(groups = "end-to-end-samples")
+  public void shouldPrintPut() {
+
+    Consumer<String> curlConsumer = mock(Consumer.class);
+
+    //@formatter:off
+    given()
+        .redirects().follow(false)
+        .baseUri(MOCK_BASE_URI)
+        .port(MOCK_PORT)
+        .config(getRestAssuredConfig(curlConsumer))
+        .when()
+        .put("/")
+        .then()
+        .statusCode(200);
+    //@formatter:on
+
+    verify(curlConsumer).accept(
+        "curl 'http://localhost:" + MOCK_PORT
+            + "/' -X PUT -H 'Accept: */*' -H 'Content-Length: 0' --compressed -k -v");
+  }
+
+
+
   @AfterClass
   public void closeMock() {
     mockServer.stop();
+    tempFolder.deleteAll();
   }
 
   private class MyHttpClientFactory implements HttpClientConfig.HttpClientFactory {

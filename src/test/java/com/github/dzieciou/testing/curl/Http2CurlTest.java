@@ -75,7 +75,7 @@ public class Http2CurlTest {
     postRequest.setHeader("Content-Type", "application/x-www-form-urlencoded");
     assertThat(getNonWindowsHttp2Curl().generateCurl(postRequest),
         equalTo(
-            "curl 'http://google.pl/' -H 'Content-Type: application/x-www-form-urlencoded' -d 'param1=param1_value&param2=param2_value' --compressed -k -v"));
+            "curl 'http://google.pl/' -H 'Content-Type: application/x-www-form-urlencoded' --data-binary 'param1=param1_value&param2=param2_value' --compressed -k -v"));
   }
 
   @Test
@@ -117,7 +117,7 @@ public class Http2CurlTest {
     putRequest.setHeader("Content-Type", "application/json");
     assertThat(getNonWindowsHttp2Curl().generateCurl(putRequest),
         equalTo(
-            "curl 'http://test.com/items/12345' -X PUT -H 'Content-Type: application/json' -d 'details={\"name\":\"myname\",\"age\":\"20\"}' --compressed -k -v"));
+            "curl 'http://test.com/items/12345' -X PUT -H 'Content-Type: application/json' --data-binary 'details={\"name\":\"myname\",\"age\":\"20\"}' --compressed -k -v"));
   }
 
   @Test
@@ -138,7 +138,7 @@ public class Http2CurlTest {
     // then
     assertThat(new Http2Curl(options).generateCurl(postRequest),
         equalTo(
-            "curl 'http://google.pl/' \\\n  -H 'Content-Type: application/x-www-form-urlencoded' \\\n  -d 'param1=param1_value&param2=param2_value' \\\n  --compressed \\\n  -k \\\n  -v"));
+            "curl 'http://google.pl/' \\\n  -H 'Content-Type: application/x-www-form-urlencoded' \\\n  --data-binary 'param1=param1_value&param2=param2_value' \\\n  --compressed \\\n  -k \\\n  -v"));
   }
 
   @Test

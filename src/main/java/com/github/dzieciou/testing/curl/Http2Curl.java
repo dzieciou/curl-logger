@@ -31,20 +31,7 @@
 
 package com.github.dzieciou.testing.curl;
 
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpEntityEnclosingRequest;
-import org.apache.http.HttpRequest;
-import org.apache.http.client.methods.HttpRequestWrapper;
-import org.apache.http.entity.mime.FormBodyPart;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.ContentBody;
-import org.apache.http.impl.client.RequestWrapper;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.util.EntityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import io.restassured.internal.multipart.RestAssuredMultiPartEntity;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -61,8 +48,19 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import io.restassured.internal.multipart.RestAssuredMultiPartEntity;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpEntityEnclosingRequest;
+import org.apache.http.HttpRequest;
+import org.apache.http.client.methods.HttpRequestWrapper;
+import org.apache.http.entity.mime.FormBodyPart;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.ContentBody;
+import org.apache.http.impl.client.RequestWrapper;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -72,9 +70,6 @@ import io.restassured.internal.multipart.RestAssuredMultiPartEntity;
 public class Http2Curl {
 
   private static final Logger log = LoggerFactory.getLogger(Http2Curl.class);
-
-  private static final List<String> NON_BINARY_CONTENT_TYPES = Arrays.asList(
-      "application/x-www-form-urlencoded", "application/json");
 
   private final Options options;
 
@@ -163,17 +158,118 @@ public class Http2Curl {
     CurlCommand curl = http2curl(request);
     options.getCurlUpdater().ifPresent(updater -> updater.accept(curl));
     return curl
-        .asString(options.getTargetPlatform(), options.useShortForm(), options.printMultiliner());
+        .asString(options.getTargetPlatform(),
+            options.useShortForm(),
+            options.printMultiliner(),
+            options.escapeNonAscii());
+  }
+
+  private static class Headers {
+
+    List<Header> toProcess;
+    Set<String> ignored;
+
+    public Headers(List<Header> toProcess) {
+      this.toProcess = toProcess;
+      this.ignored = new HashSet<>();
+    }
   }
 
   @SuppressWarnings("deprecation")
   private CurlCommand http2curl(HttpRequest request)
       throws NoSuchFieldException, IllegalAccessException, IOException {
-    Set<String> ignoredHeaders = new HashSet<>();
-    List<Header> headers = Arrays.asList(request.getAllHeaders());
 
+    Headers headers = new Headers(Arrays.asList(request.getAllHeaders()));
     CurlCommand curl = new CurlCommand();
 
+    String inferredUri = inferUri(request);
+    curl.setUrl(inferredUri);
+
+    if (request instanceof HttpEntityEnclosingRequest) {
+      HttpEntityEnclosingRequest requestWithEntity = (HttpEntityEnclosingRequest) request;
+      try {
+        HttpEntity entity = requestWithEntity.getEntity();
+        if (entity != null) {
+          Optional<String> maybeRequestContentType = tryGetHeaderValue(headers.toProcess,
+              "Content-Type");
+          String contentType = maybeRequestContentType
+              .orElseThrow(() -> new IllegalStateException("Missing Content-Type header"));
+          handleEntity(entity, contentType, headers, curl);
+        }
+      } catch (IOException e) {
+        log.error("Failed to consume form data (entity) from HTTP request", e);
+        throw e;
+      }
+    }
+
+    String requestMethod = request.getRequestLine().getMethod();
+    if ("GET".equals(requestMethod)) {
+      // skip
+    } else if ("POST".equals(requestMethod) && curl.hasData()) {
+      // skip
+    } else {
+      curl.setMethod(requestMethod);
+    }
+
+    headers.toProcess = handleAuthenticationHeader(headers.toProcess, curl);
+
+    List<Header> cookiesHeaders = headers.toProcess.stream()
+        .filter(h -> h.getName().equals("Cookie"))
+        .collect(Collectors.toList());
+    if (cookiesHeaders.size() == 1) {
+      curl.setCookieHeader(cookiesHeaders.get(0).getValue());
+      headers.toProcess = headers.toProcess.stream().filter(h -> !h.getName().equals("Cookie"))
+          .collect(Collectors.toList());
+    } else if (cookiesHeaders.size() > 1) {
+      // RFC 6265: When the user agent generates an HTTP request, the user agent MUST NOT attach
+      // more than one Cookie header field.
+      log.warn("More than one Cookie header in HTTP Request not allowed by RFC 6265");
+    }
+
+    handleNotIgnoredHeaders(headers, curl);
+
+    curl.setCompressed(true);
+    curl.setInsecure(true);
+    curl.setVerbose(true);
+    return curl;
+  }
+
+  // The method updates headers and curl arguments
+  private void handleEntity(HttpEntity entity,
+      String contentType,
+      Headers headers,
+      CurlCommand curl) throws IOException {
+
+    List<String> parameters = Arrays.asList(contentType.split(";"));
+    parameters = parameters.stream().map(s -> s.trim()).collect(Collectors.toList());
+    contentType = parameters.remove(0);
+
+    headers.ignored.add("Content-Length");
+
+    switch (contentType) {
+      case "multipart/form-data":
+        headers.ignored.add("Content-Type"); // let curl command decide
+        handleMultipartEntity(entity, curl);
+        break;
+      case "multipart/mixed":
+        // Removing header
+        headers.toProcess = filterOutHeader(headers.toProcess, "Content-Type");
+        headers.toProcess.add(new BasicHeader("Content-Type", "multipart/mixed"));
+        handleMultipartEntity(entity, curl);
+        break;
+      default:
+        String data = EntityUtils.toString(entity);
+        curl.addDataBinary(data);
+    }
+
+  }
+
+  private List<Header> filterOutHeader(List<Header> headers, String s) {
+    return headers.stream().filter(h -> !h.getName().equals(s))
+        .collect(Collectors.toList());
+  }
+
+  private String inferUri(HttpRequest request) {
     String inferredUri = request.getRequestLine().getUri();
     if (!isValidUrl(inferredUri)) { // Missing schema and domain name
       String host = getHost(request);
@@ -195,87 +291,25 @@ public class Http2Curl {
                 .replaceAll("(?<!http(s)?:)//", "/");
       }
     }
-
-    curl.setUrl(inferredUri);
-
-    String inferredMethod = "GET";
-    Optional<String> requestContentType = tryGetHeaderValue(headers, "Content-Type");
-
-    if (request instanceof HttpEntityEnclosingRequest) {
-      HttpEntityEnclosingRequest requestWithEntity = (HttpEntityEnclosingRequest) request;
-      try {
-        HttpEntity entity = requestWithEntity.getEntity();
-        if (entity != null) {
-          if (requestContentType.isPresent()) {
-            if (requestContentType.get().startsWith("multipart/form")) {
-              ignoredHeaders.add("Content-Type"); // let curl command decide
-              ignoredHeaders.add("Content-Length");
-              handleMultipartEntity(entity, curl);
-            } else if ((requestContentType.get().startsWith("multipart/mixed"))) {
-              headers = headers.stream().filter(h -> !h.getName().equals("Content-Type"))
-                  .collect(Collectors.toList());
-              headers.add(new BasicHeader("Content-Type", "multipart/mixed"));
-              ignoredHeaders.add("Content-Length");
-              handleMultipartEntity(entity, curl);
-            } else {
-              String formData = EntityUtils.toString(entity);
-              if (NON_BINARY_CONTENT_TYPES.contains(requestContentType.get())) {
-                curl.addData(formData);
-                ignoredHeaders.add("Content-Length");
-                inferredMethod = "POST";
-              } else {
-                curl.addDataBinary(formData);
-                ignoredHeaders.add("Content-Length");
-                inferredMethod = "POST";
-              }
-            }
-          }
-        }
-      } catch (IOException e) {
-        log.error("Failed to consume form data (entity) from HTTP request", e);
-        throw e;
-      }
-    }
-
-    if (!request.getRequestLine().getMethod().equals(inferredMethod)) {
-      curl.setMethod(request.getRequestLine().getMethod());
-    }
-
-    headers = handleAuthenticationHeader(headers, curl);
-
-    List<Header> cookiesHeaders = headers.stream()
-        .filter(h -> h.getName().equals("Cookie"))
-        .collect(Collectors.toList());
-    if (cookiesHeaders.size() == 1) {
-      curl.setCookieHeader(cookiesHeaders.get(0).getValue());
-      headers = headers.stream().filter(h -> !h.getName().equals("Cookie"))
-          .collect(Collectors.toList());
-    } else if (cookiesHeaders.size() > 1) {
-      // RFC 6265: When the user agent generates an HTTP request, the user agent MUST NOT attach
-      // more than one Cookie header field.
-      log.warn("More than one Cookie header in HTTP Request not allowed by RFC 6265");
-    }
-
-    handleNotIgnoredHeaders(headers, ignoredHeaders, curl);
-
-    curl.setCompressed(true);
-    curl.setInsecure(true);
-    curl.setVerbose(true);
-    return curl;
+    return inferredUri;
   }
 
-  private void handleMultipartEntity(HttpEntity entity, CurlCommand curl)
-      throws NoSuchFieldException, IllegalAccessException {
-    HttpEntity wrappedEntity = (HttpEntity) getFieldValue(entity, "wrappedEntity");
-    RestAssuredMultiPartEntity multiPartEntity = (RestAssuredMultiPartEntity) wrappedEntity;
-    MultipartEntityBuilder multipartEntityBuilder = (MultipartEntityBuilder) getFieldValue(
-        multiPartEntity, "builder");
+  private void handleMultipartEntity(HttpEntity entity, CurlCommand curl) {
+    try {
+      HttpEntity wrappedEntity = (HttpEntity) getFieldValue(entity, "wrappedEntity");
+      RestAssuredMultiPartEntity multiPartEntity = (RestAssuredMultiPartEntity) wrappedEntity;
+      MultipartEntityBuilder multipartEntityBuilder = (MultipartEntityBuilder) getFieldValue(
+          multiPartEntity, "builder");
 
-    @SuppressWarnings("unchecked")
-    List<FormBodyPart> bodyParts = (List<FormBodyPart>) getFieldValue(multipartEntityBuilder,
-        "bodyParts");
+      @SuppressWarnings("unchecked")
+      List<FormBodyPart> bodyParts = (List<FormBodyPart>) getFieldValue(multipartEntityBuilder,
+          "bodyParts");
 
-    bodyParts.forEach(p -> handlePart(p, curl));
+      bodyParts.forEach(p -> handlePart(p, curl));
+    } catch (NoSuchFieldException | IllegalAccessException e) {
+      throw new RuntimeException(e);
+    }
+
   }
 
   private void handlePart(FormBodyPart bodyPart, CurlCommand curl) {
@@ -312,11 +346,10 @@ public class Http2Curl {
     }
   }
 
-  private void handleNotIgnoredHeaders(List<Header> headers, Set<String> ignoredHeaders,
-                                       CurlCommand curl) {
-    headers
+  private void handleNotIgnoredHeaders(Headers headers, CurlCommand curl) {
+    headers.toProcess
         .stream()
-        .filter(h -> !ignoredHeaders.contains(h.getName()))
+        .filter(h -> !headers.ignored.contains(h.getName()))
         .forEach(h -> curl.addHeader(h.getName(), h.getValue()));
   }
 
