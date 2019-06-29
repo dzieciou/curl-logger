@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.dzieciou.testing</groupId>
     <artifactId>curl-logger</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.5-SNAPSHOT</version>
     <packaging>jar</packaging>
     <url>https://github.com/dzieciou/curl-logger</url>
     <name>com.github.dzieciou.testing:curl-logger</name>
