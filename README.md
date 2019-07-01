@@ -152,7 +152,7 @@ downside of this might be less legible commands like `Administra\xe7\xe3o` inste
 `Administração`. If you want your commands to be more legible (and bound to specific terminal setups)
 you may disable escaping non-ASCII characters, use the following option (for Unix only):
 ```java
-Options.builder().dontEscapeNonAscii()
+Options.builder().dontEscapeNonAscii();
 ```
 
 ### Printing curl in multiple lines
@@ -301,7 +301,7 @@ given()
 <dependency>
     <groupId>io.restassured</groupId>
     <artifactId>rest-assured</artifactId>
-    <version>3.2.0</version>
+    <version>4.0.0</version>
 </dependency>
 ```
 

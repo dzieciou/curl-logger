@@ -188,7 +188,7 @@ public class UsingWithRestAssuredTest {
 
     verify(curlConsumer).accept(
         "curl 'http://localhost:" + MOCK_PORT
-            + "/' -X POST -H 'Accept: */*' -F 'file=@README.md;type=application/octet-stream' -F 'parameterX=parameterXValue;type=text/plain' --compressed -k -v");
+            + "/' -X POST -H 'Accept: */*' -F 'file=@README.md;type=application/octet-stream' -F 'parameterX=parameterXValue;type=text/plain; charset=US-ASCII' --compressed -k -v");
 
   }
 
@@ -251,7 +251,7 @@ public class UsingWithRestAssuredTest {
 
     verify(curlConsumer).accept(
         "curl 'http://localhost:" + MOCK_PORT
-            + "/' -X POST -H 'Accept: */*' -F 'message={content:\"interesting\"};type=application/json' --compressed -k -v");
+            + "/' -X POST -H 'Accept: */*' -F 'message={content:\"interesting\"};type=application/json; charset=US-ASCII' --compressed -k -v");
 
   }
 
