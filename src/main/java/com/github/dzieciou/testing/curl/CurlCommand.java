@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 
 /**
  * Represents curl command and provides a way to serialize it through {@link #asString(Platform,
-` * boolean, boolean, boolean)} method.
+ * boolean, boolean, boolean)} method.
  */
 public class CurlCommand {
 
@@ -245,7 +245,7 @@ public class CurlCommand {
           .replaceAll("\"", "\"\"")
           .replaceAll("%", "\"%\"")
           .replaceAll("\\\\", "\\\\")
-          .replaceAll("[\r\n]+", "\"^$&\"")
+          .replaceAll("[\r\n]+", "\"^\r\n$0\"")
           + "\"";
     }
 
