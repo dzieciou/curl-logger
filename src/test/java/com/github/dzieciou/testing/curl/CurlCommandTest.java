@@ -95,9 +95,6 @@ public class CurlCommandTest {
             + "   'password':'abc%\"'\r\n"
             + "}");
 
-    System.out.println(curl.asString(Platform.UNIX, true, false, true));
-    String win = curl.asString(Platform.WINDOWS, true, false, true);
-    System.out.println(win);
     assertThat(curl.asString(Platform.UNIX, true, false, true),
         equalTo("curl 'http://testapi.com/post' --data-binary $'{\\r\\n   \\'name\\':"
             + "\\'Administra\\xe7\\xe3o\\',\\r\\n   \\'email\\':\\'admin\\x40gmail.com\\',"
