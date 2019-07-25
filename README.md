@@ -150,9 +150,9 @@ the generated curl command will be copy-pasted on a multitude of setups by a wid
 I don't want the result to vary based on people's local encoding or misconfigured terminals. The 
 downside of this might be less legible commands like `Administra\xe7\xe3o` instead of 
 `Administração`. If you want your commands to be more legible (and bound to specific terminal setups)
-you may disable escaping non-ASCII characters, use the following option (for Unix only):
+you may disable escaping non-ASCII characters by using the following option (for Unix only):
 ```java
-Options.builder().dontEscapeNonAscii();
+Options.builder().dontEscapeNonAscii().build();
 ```
 
 ### Printing curl in multiple lines
