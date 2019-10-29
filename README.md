@@ -374,7 +374,16 @@ Alexey Dushen (blacky0x0): https://github.com/dzieciou/curl-logger/issues/2.
 
 ## Bugs and features request
 
-Report or request in [JIRA][2].
+Report or request in [Issues][2].
+
+## Supporting 
+
+This is an open source library that I give for free to the community as my way of saying thank you
+for what all the support I received from this community.
+
+If you like my work and want to say thank you as well then:
+
+[![Buy me a coffee](https://cdn.buymeacoffee.com/buttons/default-blue.png)](https://www.buymeacoffee.com/dzieciou)
 
 ## Similar tools
   
