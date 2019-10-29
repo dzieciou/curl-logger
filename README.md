@@ -372,9 +372,7 @@ Alexey Dushen (blacky0x0): https://github.com/dzieciou/curl-logger/issues/2.
 
  * Support for logging basic operations
 
-## Bugs and features request
 
-Report or request in [Issues][2].
 
 ## Similar tools
   
@@ -393,6 +391,15 @@ Report or request in [Issues][2].
   [8]: http://www.softwareishard.com/blog/planet-mozilla/firebug-tip-resend-http-request/
   [9]: http://rest-assured.io/
 
+## Bugs and features request
+
+Report or request in [Issues][2].
+
+## Contribute!
+
+This is an open-source library, and contributions are welcome. You're welcome to fork this project 
+and send me a pull request.
+
 ## Supporting 
 
 This is an open-source library that I give for free to the community as my way of saying thank you
@@ -402,7 +409,4 @@ If you like my work and want to say thank you as well then:
 
 [![Buy me a coffee](https://cdn.buymeacoffee.com/buttons/default-blue.png)](https://www.buymeacoffee.com/dzieciou)
 
-## Contribute!
 
-This is an open-source library, and contributions are welcome. You're welcome to fork this project 
-and send me a pull request.
