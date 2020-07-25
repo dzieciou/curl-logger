@@ -337,7 +337,8 @@ CurlRestAssuredConfigFactory.createConfig(handlers)
 ## Releases
 
 2.0.0:
-* Support for custom curl handlers
+* Support for custom log levels (thanks to Jérémie Bresson for pull request)
+* Support for custom curl handlers 
 * Backward-incompatible change: `CurlLoggingRestAssuredConfigFactory` renamed to 
 `CurlRestAssuredConfigFactory`. 
 
