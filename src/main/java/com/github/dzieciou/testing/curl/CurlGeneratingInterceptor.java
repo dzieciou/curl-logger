@@ -1,6 +1,8 @@
 package com.github.dzieciou.testing.curl;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
@@ -12,16 +14,21 @@ import org.slf4j.LoggerFactory;
 /**
  * Logs each HTTP request as CURL command in "curl" log.
  */
-public class CurlLoggingInterceptor implements HttpRequestInterceptor {
+public class CurlGeneratingInterceptor implements HttpRequestInterceptor {
 
   private static final Logger log = LoggerFactory.getLogger("curl");
-
   private final Options options;
 
   private final Http2Curl http2Curl;
 
-  public CurlLoggingInterceptor(Options options) {
+  private final List<CurlHandler> handlers;
+
+  public CurlGeneratingInterceptor(Options options, List<CurlHandler> handlers) {
+    if (handlers.isEmpty()) {
+      throw new IllegalArgumentException("Missing handlers, at least one should be given");
+    }
     this.options = options;
+    this.handlers = new ArrayList(handlers);
     http2Curl = new Http2Curl(options);
   }
 
@@ -41,7 +48,8 @@ public class CurlLoggingInterceptor implements HttpRequestInterceptor {
         message.append(String.format("%n\tgenerated%n"));
         printStacktrace(message);
       }
-      log.debug(message.toString());
+      String finalMessage = message.toString();
+      this.handlers.forEach(h -> h.handle(finalMessage, this.options));
     } catch (Exception e) {
       log.warn("Failed to generate CURL command for HTTP request", e);
     }

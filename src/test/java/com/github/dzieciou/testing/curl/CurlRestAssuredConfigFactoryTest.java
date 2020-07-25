@@ -28,7 +28,7 @@ import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
-public class CurlLoggingRestAssuredConfigFactoryTest {
+public class CurlRestAssuredConfigFactoryTest {
 
   private static final int MOCK_PORT = 9999;
   private static final String MOCK_HOST = "localhost";
@@ -44,9 +44,9 @@ public class CurlLoggingRestAssuredConfigFactoryTest {
 
   @Test
   public void shouldIncludeCurlInterceptorWhenCreatingConfig() {
-    RestAssuredConfig updatedConfig = CurlLoggingRestAssuredConfigFactory.createConfig();
+    RestAssuredConfig updatedConfig = CurlRestAssuredConfigFactory.createConfig();
     AbstractHttpClient updateClientConfig = (AbstractHttpClient) updatedConfig.getHttpClientConfig().httpClientInstance();
-    assertThat(updateClientConfig, new ContainsRequestInterceptor(CurlLoggingInterceptor.class));
+    assertThat(updateClientConfig, new ContainsRequestInterceptor(CurlGeneratingInterceptor.class));
   }
 
   @Test
@@ -67,18 +67,19 @@ public class CurlLoggingRestAssuredConfigFactoryTest {
     final RestAssuredConfig config = RestAssuredConfig.config()
         .httpClient(httpClientConfig);
 
-    RestAssuredConfig updatedConfig = CurlLoggingRestAssuredConfigFactory.updateConfig(config, Options.builder().build());
+    RestAssuredConfig updatedConfig = CurlRestAssuredConfigFactory
+        .updateConfig(config, Options.builder().build());
 
     // original configuration has not been modified
     assertThat(updatedConfig, not(equalTo(config)));
     AbstractHttpClient clientConfig = (AbstractHttpClient) config.getHttpClientConfig().httpClientInstance();
-    assertThat(clientConfig, not(new ContainsRequestInterceptor(CurlLoggingInterceptor.class)));
+    assertThat(clientConfig, not(new ContainsRequestInterceptor(CurlGeneratingInterceptor.class)));
     assertThat(clientConfig, new ContainsRequestInterceptor(MyRequestInerceptor.class));
     assertThat(updatedConfig.getHttpClientConfig().params().get("TestParam"), equalTo("TestValue"));
 
     // curl logging interceptor is included
     AbstractHttpClient updateClientConfig = (AbstractHttpClient) updatedConfig.getHttpClientConfig().httpClientInstance();
-    assertThat(updateClientConfig, new ContainsRequestInterceptor(CurlLoggingInterceptor.class));
+    assertThat(updateClientConfig, new ContainsRequestInterceptor(CurlGeneratingInterceptor.class));
 
     // original interceptors are preserved in new configuration
     assertThat(updateClientConfig, new ContainsRequestInterceptor(MyRequestInerceptor.class));
@@ -91,7 +92,7 @@ public class CurlLoggingRestAssuredConfigFactoryTest {
   @Test
   public void shouldSentRequestWhenUsingConfigurationFactory() {
     RestAssured.given()
-        .config(CurlLoggingRestAssuredConfigFactory.createConfig(Options.builder().useShortForm().build()))
+        .config(CurlRestAssuredConfigFactory.createConfig(Options.builder().useShortForm().build()))
         .baseUri(MOCK_BASE_URI)
         .port(MOCK_PORT)
         .when()

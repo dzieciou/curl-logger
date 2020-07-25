@@ -7,6 +7,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import com.github.valfirst.slf4jtest.LoggingEvent;
 import com.github.valfirst.slf4jtest.TestLoggerFactory;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.http.client.HttpClient;
@@ -40,9 +41,9 @@ public class UsingWithHttpClientTest {
 
   private static HttpClient createHttpClient() {
     return HttpClientBuilder.create()
-        .addInterceptorFirst(new CurlLoggingInterceptor(Options.builder()
+        .addInterceptorFirst(new CurlGeneratingInterceptor(Options.builder()
             .targetPlatform(Platform.UNIX) // TO ease verifying output curl
-            .build()))
+            .build(), Arrays.asList(new CurlLogger())))
         .build();
   }
 
