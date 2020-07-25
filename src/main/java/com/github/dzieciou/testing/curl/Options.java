@@ -1,14 +1,15 @@
 package com.github.dzieciou.testing.curl;
 
-
 import java.util.Optional;
 import java.util.function.Consumer;
+import org.slf4j.event.Level;
 
 public class Options {
 
   private boolean logStacktrace;
   private boolean printMultiliner;
   private boolean useShortForm;
+  private Level logLevel = Level.DEBUG;
   private Consumer<CurlCommand> curlUpdater;
   private Platform targetPlatform = Platform.RECOGNIZE_AUTOMATICALLY;
   private boolean escapeNonAscii;
@@ -38,6 +39,10 @@ public class Options {
 
   public Optional<Consumer<CurlCommand>> getCurlUpdater() {
     return Optional.ofNullable(curlUpdater);
+  }
+
+  public Level logLevel() {
+    return this.logLevel;
   }
 
   public Platform getTargetPlatform() {
@@ -127,6 +132,14 @@ public class Options {
      */
     public Builder dontEscapeNonAscii() {
       options.escapeNonAscii = false;
+      return this;
+    }
+
+    /**
+     * Changes logging to a custom level.
+     */
+    public Builder useLogLevel(Level level) {
+      options.logLevel = level;
       return this;
     }
 
