@@ -52,7 +52,7 @@
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
-            <version>4.0.0</version>
+            <version>4.3.1</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>

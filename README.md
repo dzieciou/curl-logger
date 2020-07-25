@@ -330,13 +330,14 @@ CurlRestAssuredConfigFactory.createConfig(handlers)
 <dependency>
     <groupId>io.restassured</groupId>
     <artifactId>rest-assured</artifactId>
-    <version>4.0.0</version>
+    <version>4.3.1</version>
 </dependency>
 ```
 
 ## Releases
 
 2.0.0:
+* Tested with latest REST-assured (4.3.1)
 * Support for custom log levels (thanks to Jérémie Bresson for pull request)
 * Support for custom curl handlers 
 * Backward-incompatible change: `CurlLoggingRestAssuredConfigFactory` renamed to 
