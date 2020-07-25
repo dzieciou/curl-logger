@@ -324,6 +324,11 @@ CurlRestAssuredConfigFactory.createConfig(handlers)
 
 ## Releases
 
+2.0.0:
+* Support for custom curl handlers
+* Backward-incompatible change: `CurlLoggingRestAssuredConfigFactory` renamed to 
+`CurlRestAssuredConfigFactory. 
+
 1.0.5:
 * Upgrade to REST-assured 4.0.0.
 * Update test scope dependencies.
