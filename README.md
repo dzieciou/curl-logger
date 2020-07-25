@@ -100,10 +100,22 @@ Options.builder().logStacktrace().build();
 This might be particularly useful when your test is sending multiple requests and you cannot find
 which request generated  printed curl command.
 
-
-
 By default `CurlRestAssuredConfigFactory#createConfig` creates configuration that prints a curl command in
  a single line.
+
+### Configure log level
+
+There is a way to define at which log level the log statement should be created:
+```java  
+Options.builder().logLevel(Level.INFO).build();
+```
+
+By default the curl commands are generated at `DEBUG` level, but depending on the context it might 
+be handy to log at an higher level.
+
+If the log level is set to `null` no log entries are generated.
+
+
  
 ### Generating curl for Windows vs Unix 
 
@@ -327,7 +339,7 @@ CurlRestAssuredConfigFactory.createConfig(handlers)
 2.0.0:
 * Support for custom curl handlers
 * Backward-incompatible change: `CurlLoggingRestAssuredConfigFactory` renamed to 
-`CurlRestAssuredConfigFactory. 
+`CurlRestAssuredConfigFactory`. 
 
 1.0.5:
 * Upgrade to REST-assured 4.0.0.
