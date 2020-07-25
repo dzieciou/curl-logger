@@ -6,6 +6,7 @@ import static io.restassured.config.HttpClientConfig.httpClientConfig;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.startsWith;
 import static org.mockserver.integration.ClientAndServer.startClientAndServer;
@@ -17,6 +18,9 @@ import com.github.valfirst.slf4jtest.TestLogger;
 import com.github.valfirst.slf4jtest.TestLoggerFactory;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -28,7 +32,7 @@ import org.testng.annotations.Test;
 import uk.org.lidalia.slf4jext.Level;
 
 
-public class CurlLoggingInterceptorTest {
+public class CurlGeneratingInterceptorTest {
 
   private static final int MOCK_PORT = 9999;
   private static final String MOCK_HOST = "localhost";
@@ -37,11 +41,11 @@ public class CurlLoggingInterceptorTest {
   private TestLogger log;
 
   private static RestAssuredConfig getRestAssuredConfig(
-      CurlLoggingInterceptor curlLoggingInterceptor) {
+      CurlGeneratingInterceptor curlGeneratingInterceptor) {
     return config()
         .httpClient(httpClientConfig()
             .reuseHttpClientInstance()
-            .httpClientFactory(new MyHttpClientFactory(curlLoggingInterceptor)));
+            .httpClientFactory(new MyHttpClientFactory(curlGeneratingInterceptor)));
   }
 
   @BeforeClass
@@ -57,7 +61,9 @@ public class CurlLoggingInterceptorTest {
     log = TestLoggerFactory.getTestLogger("curl");
     log.clearAll();
     Options OPTIONS = Options.builder().dontLogStacktrace().build();
-    RestAssuredConfig restAssuredConfig = getRestAssuredConfig(new CurlLoggingInterceptor(OPTIONS));
+    List<CurlHandler> handlers = Arrays.asList(new CurlLogger());
+    RestAssuredConfig restAssuredConfig = getRestAssuredConfig(
+        new CurlGeneratingInterceptor(OPTIONS, handlers));
 
     // when
     //@formatter:off
@@ -86,7 +92,9 @@ public class CurlLoggingInterceptorTest {
     log = TestLoggerFactory.getTestLogger("curl");
     log.clearAll();
     Options options = Options.builder().logStacktrace().build();
-    RestAssuredConfig restAssuredConfig = getRestAssuredConfig(new CurlLoggingInterceptor(options));
+    List<CurlHandler> handlers = Arrays.asList(new CurlLogger());
+    RestAssuredConfig restAssuredConfig = getRestAssuredConfig(
+        new CurlGeneratingInterceptor(options, handlers));
 
     // when
     //@formatter:off
@@ -109,6 +117,39 @@ public class CurlLoggingInterceptorTest {
         .and(containsString(("java.lang.Thread.getStackTrace"))));
   }
 
+  @Test
+  public void testCustomHandler() {
+    // given
+    Options options = Options.builder().logStacktrace().build();
+    final List<String> curls = new ArrayList<>();
+    CurlHandler handler = new CurlHandler() {
+      @Override
+      public void handle(String curl, Options options) {
+        curls.add(curl);
+      }
+    };
+    List<CurlHandler> handlers = Arrays.asList(handler);
+    RestAssuredConfig restAssuredConfig = getRestAssuredConfig(
+        new CurlGeneratingInterceptor(options, handlers));
+
+    // when
+    //@formatter:off
+    given()
+        .redirects().follow(false)
+        .baseUri(MOCK_BASE_URI)
+        .port(MOCK_PORT)
+        .config(restAssuredConfig)
+        .when()
+        .get("/shouldLogStacktraceWhenEnabled")
+        .then()
+        .statusCode(200);
+    //@formatter:on
+
+    // then
+    assertThat(handlers.size(), is(1));
+    assertThat(curls.get(0), is(startsWith("curl")));
+  }
+
   @AfterMethod
   public void clearLoggers() {
     log.clearAll();
@@ -122,16 +163,16 @@ public class CurlLoggingInterceptorTest {
 
   private static class MyHttpClientFactory implements HttpClientConfig.HttpClientFactory {
 
-    private final CurlLoggingInterceptor curlLoggingInterceptor;
+    private final CurlGeneratingInterceptor curlGeneratingInterceptor;
 
-    public MyHttpClientFactory(CurlLoggingInterceptor curlLoggingInterceptor) {
-      this.curlLoggingInterceptor = curlLoggingInterceptor;
+    public MyHttpClientFactory(CurlGeneratingInterceptor curlGeneratingInterceptor) {
+      this.curlGeneratingInterceptor = curlGeneratingInterceptor;
     }
 
     @Override
     public HttpClient createHttpClient() {
       @SuppressWarnings("deprecation") AbstractHttpClient client = new DefaultHttpClient();
-      client.addRequestInterceptor(curlLoggingInterceptor);
+      client.addRequestInterceptor(curlGeneratingInterceptor);
       return client;
     }
   }
