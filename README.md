@@ -100,8 +100,7 @@ Options.builder().logStacktrace().build();
 This might be particularly useful when your test is sending multiple requests and you cannot find
 which request generated  printed curl command.
 
-By default `CurlRestAssuredConfigFactory#createConfig` creates configuration that prints a curl command in
- a single line.
+By default `CurlRestAssuredConfigFactory#createConfig` creates configuration that prints a curl command without stacktrace.
 
 ### Configure log level
 
