@@ -222,7 +222,7 @@ curl 'http://google.pl/' -header 'Content-Type: application/x-www-form-urlencode
 By default `CurlRestAssuredConfigFactory#createConfig` create configuration  that prints
  a curl command parameters in short form.
 
-## Updating curl command before print
+### Updating curl command before print
 
 The library provides a way to modify curl command before 
 printing:
@@ -261,6 +261,23 @@ curl 'http://google.pl/' -H 'Content-Type: application/x-www-form-urlencoded'
   --data-binary 'param1=param1_value&param2=param2_value' --compressed -k -v
 ```
 
+### Custom curl handling
+
+By default generated curls are logged. However, there's a way to process curl by one or more custom
+handlers by providing a list of custom handlers, implementing `CurlHandler` interface. For instance, 
+to store generated curls in a variable one could write:
+
+```java
+final List<String> curls = new ArrayList<>();
+CurlHandler handler = new CurlHandler() {
+  @Override
+  public void handle(String curl, Options options) {
+    curls.add(curl);
+  }
+};
+List<CurlHandler> handlers = Arrays.asList(handler);
+CurlRestAssuredConfigFactory.createConfig(handlers)
+```
 
 
 ## Other features
@@ -293,23 +310,6 @@ given()
   .body(new File("README.md"))
 .when()
   .post("/uploadFile");
-```
-### Custom curl handling
-
-By default generated curls are logged. However, there's a way to process curl by one or more custom
-handlers by providing a list of custom handlers, implementing `CurlHandler` interface. For instance, 
-to store generated curls in a variable one could write:
-
-```java
-final List<String> curls = new ArrayList<>();
-CurlHandler handler = new CurlHandler() {
-  @Override
-  public void handle(String curl, Options options) {
-    curls.add(curl);
-  }
-};
-List<CurlHandler> handlers = Arrays.asList(handler);
-CurlRestAssuredConfigFactory.createConfig(handlers)
 ```
 
 ## Prerequisities
