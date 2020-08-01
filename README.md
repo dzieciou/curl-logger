@@ -294,7 +294,7 @@ given()
 .when()
   .post("/uploadFile");
 ```
-## Custom curl handling
+### Custom curl handling
 
 By default generated curls are logged. However, there's a way to process curl by one or more custom
 handlers by providing a list of custom handlers, implementing `CurlHandler` interface. For instance, 
