@@ -295,13 +295,7 @@ public class CurlCommand {
     }
 
     private static String escapeAsHex(char c) {
-      int code = (int) c;
-      String codeAsHex = Integer.toHexString(code);
-      if (code < 256) {
-        // Add leading zero when needed to not care about the next character.
-        return code < 16 ? "\\x0" + codeAsHex : "\\x" + codeAsHex;
-      }
-      return "\\u" + ("" + codeAsHex).substring(codeAsHex.length(), 4);
+      return String.format("%04x", (int) c);
     }
 
     public String serialize(CurlCommand curl) {
