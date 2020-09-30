@@ -264,8 +264,8 @@ public class Http2Curl {
 
   }
 
-  private List<Header> filterOutHeader(List<Header> headers, String s) {
-    return headers.stream().filter(h -> !h.getName().equals(s))
+  private List<Header> filterOutHeader(List<Header> headers, String name) {
+    return headers.stream().filter(h -> !h.getName().equals(name))
         .collect(Collectors.toList());
   }
 
