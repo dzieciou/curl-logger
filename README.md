@@ -333,6 +333,7 @@ given()
 ## Releases
 
 2.0.0:
+* Fix to invalid escaping of characters longer than 8 bits (#47, thanks to Srepfler Srdan for reporting it)
 * Tested with latest REST-assured (4.3.1)
 * Support for custom log levels (thanks to Jérémie Bresson for pull request)
 * Support for custom curl handlers 
