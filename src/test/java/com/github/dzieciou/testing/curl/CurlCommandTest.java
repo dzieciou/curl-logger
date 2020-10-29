@@ -1,10 +1,12 @@
 package com.github.dzieciou.testing.curl;
 
 
-import org.testng.annotations.Test;
-
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
+
+import org.testng.annotations.Test;
 
 public class CurlCommandTest {
 
@@ -98,7 +100,7 @@ public class CurlCommandTest {
                         + "\\r\\n   \\'password\\':\\'abc%\"\\'\\r\\n}'"));
 
         assertThat(curl.asString(Platform.WINDOWS, true, false, true),
-                equalTo("curl \"http://testapi.com/post\" --data-binary \"{\"^\r\n\r\n\""
+                equalTo( "curl \"http://testapi.com/post\" --data-binary \"{\"^\r\n\r\n\""
                         + "   'name':'Administração',\"^\r\n\r\n\"   'email':'admin@gmail.com',\"^\r\n\r\n\""
                         + "   'password':'abc\"%\"\"\"'\"^\r\n\r\n\"}\""));
 
