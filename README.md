@@ -57,7 +57,7 @@ If you already have a `RestAssuredConfig` instance, you may reconfigure it as fo
 
 ```java
 RestAssuredConfig config = ...;
-config = CurlRestAssuredConfigFactory.updateConfig(config);  
+config = CurlLoggingRestAssuredConfigFactory.updateConfig(config);  
 ```
 
 The library provides a number of options for the way curl is generated and logged. They can be
@@ -65,7 +65,7 @@ defined with `Options` class. For instance:
  
 ```java
 Options options = Options.builder()...build();
-RestAssuredConfig config = CurlRestAssuredConfigFactory.createConfig(options);  
+RestAssuredConfig config = CurlLoggingRestAssuredConfigFactory.createConfig(options);  
 ```
 
 There is a separate section listing all options.
@@ -100,7 +100,7 @@ Options.builder().logStacktrace().build();
 This might be particularly useful when your test is sending multiple requests and you cannot find
 which request generated  printed curl command.
 
-By default `CurlRestAssuredConfigFactory#createConfig` creates configuration that prints a curl command without stacktrace.
+By default `CurlLoggingRestAssuredConfigFactory#createConfig` creates configuration that prints a curl command without stacktrace.
 
 ### Configure log level
 
@@ -219,7 +219,7 @@ curl 'http://google.pl/' -header 'Content-Type: application/x-www-form-urlencode
   --data-binary 'param1=param1_value&param2=param2_value' --compressed --insecure --verbose
 ```
 
-By default `CurlRestAssuredConfigFactory#createConfig` create configuration  that prints
+By default `CurlLoggingRestAssuredConfigFactory#createConfig` create configuration  that prints
  a curl command parameters in short form.
 
 ### Updating curl command before print
@@ -276,7 +276,7 @@ CurlHandler handler = new CurlHandler() {
   }
 };
 List<CurlHandler> handlers = Arrays.asList(handler);
-CurlRestAssuredConfigFactory.createConfig(handlers)
+CurlLoggingRestAssuredConfigFactory.createConfig(handlers)
 ```
 
 
@@ -288,7 +288,7 @@ When you attach a file to your requests via `multiPart`, e.g., sending content o
 
 ```java
 given()
-  .config(CurlRestAssuredConfigFactory.createConfig())
+  .config(CurlLoggingRestAssuredConfigFactory.createConfig())
   .baseUri("http://someHost.com")
   .multiPart("myfile", new File("README.md"), "application/json")
 .when()
@@ -305,7 +305,7 @@ printed.
 
 ```java
 given()
-  .config(CurlRestAssuredConfigFactory.createConfig())
+  .config(CurlLoggingRestAssuredConfigFactory.createConfig())
   .baseUri("http://someHost.com")
   .body(new File("README.md"))
 .when()
@@ -338,7 +338,7 @@ given()
 * Support for custom log levels (thanks to Jérémie Bresson for pull request)
 * Support for custom curl handlers 
 * Backward-incompatible change: `CurlLoggingRestAssuredConfigFactory` renamed to 
-`CurlRestAssuredConfigFactory`. 
+`CurlLoggingRestAssuredConfigFactory`. 
 
 1.0.5:
 * Upgrade to REST-assured 4.0.0.
@@ -369,7 +369,7 @@ only prints warning (https://github.com/dzieciou/curl-logger/issues/13)
 * First major release with stable public API
 * Provided a way to force target platform of generated curl command
 * Backward-incompatible change: `CurlLoggingRestAssuredConfigBuilder` replaced with 
-`CurlRestAssuredConfigFactory` that uses `Options` class to configure curl generation process.
+`CurlLoggingRestAssuredConfigFactory` that uses `Options` class to configure curl generation process.
 
 0.7:
 
