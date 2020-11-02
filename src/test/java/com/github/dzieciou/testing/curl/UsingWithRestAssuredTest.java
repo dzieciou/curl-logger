@@ -172,27 +172,6 @@ public class UsingWithRestAssuredTest {
             + "/' -H 'Accept: */*' --compressed -k -v");
   }
 
-  @Test(groups = "end-to-end-samples")
-  public void basicIntegrationTest2() {
-
-    Consumer<String> curlConsumer = mock(Consumer.class);
-
-    //@formatter:off
-    given()
-            .redirects().follow(false)
-            .baseUri(MOCK_BASE_URI)
-            .port(MOCK_PORT)
-            .config(getRestAssuredConfig(curlConsumer))
-            .param("secret", "P@assword!")
-            .put()
-            .then()
-            .statusCode(200);
-    //@formatter:on
-
-    verify(curlConsumer).accept(
-            "curl 'http://localhost:" + MOCK_PORT
-                    + "/' -H 'Accept: */*' --compressed -k -v");
-  }
 
   @Test(groups = "end-to-end-samples")
   public void shouldPrintPostRequestWithMultipartDataProperly() {
@@ -234,28 +213,6 @@ public class UsingWithRestAssuredTest {
         "curl 'http://localhost:" + MOCK_PORT
             + "/' -H 'Accept: */*' -H 'Content-Type: application/json; charset=UTF-8' --data-binary 'name=Administração' --compressed -k -v");
   }
-
-  @Test(groups = "end-to-end-samples")
-  public void shouldPrintBody2() {
-
-    Consumer<String> curlConsumer = mock(Consumer.class);
-
-    //@formatter:off
-    RequestSpecification request = given()
-            .baseUri(MOCK_BASE_URI)
-            .port(MOCK_PORT)
-            .config(config()
-                    .httpClient(httpClientConfig()
-                            .reuseHttpClientInstance()))
-            .contentType(ContentType.JSON)
-            .body("name=Administração")
-            .when();
-
-    request.post("/");
-
-    request.post("/");
-    //@formatter:on
-}
 
 
   @Test(groups = "end-to-end-samples")
