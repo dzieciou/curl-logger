@@ -273,7 +273,7 @@ public class CurlCommand {
           case '\'': return "\\'";
           case '\t': return "\\t";
           case '\r': return "\\r";
-          // '@' character has a special meaning in --data-binary (loadin a file)
+          // '@' character has a special meaning in --data-binary (loading a file)
           // So we need to escape it
           case '@': return escapeAsHex(c);
           default:

@@ -352,7 +352,7 @@ the issue: [#25](https://github.com/dzieciou/curl-logger/issues/25))
 
 1.0.4:
 * Bug fix: HTTPS protocol was not always recognized correctly 
-(https://github.com/dzieciou/curl-logger/issues/17). Many thanks to pafitchett-ks for troubleshooting.
+([#17](https://github.com/dzieciou/curl-logger/issues/17)). Many thanks to pafitchett-ks for troubleshooting.
 * Support slf4j 1.8.0-beta2.
 * Support rest-assured 3.2.0. 
 
