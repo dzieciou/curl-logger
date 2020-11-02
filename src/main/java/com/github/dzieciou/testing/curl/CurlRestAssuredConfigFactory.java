@@ -110,7 +110,7 @@ public class CurlRestAssuredConfigFactory {
         handlers);
     return config
         .httpClient(config.getHttpClientConfig()
-            .reuseHttpClientInstance()
+            .dontReuseHttpClientInstance()
             .httpClientFactory(new MyHttpClientFactory(originalFactory, interceptor)));
   }
 
