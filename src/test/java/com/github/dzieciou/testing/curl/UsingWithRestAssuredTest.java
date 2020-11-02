@@ -24,14 +24,15 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+
+import io.restassured.specification.RequestSpecification;
 import org.apache.commons.io.FileUtils;
-import org.apache.http.HttpException;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 import org.mockserver.client.MockServerClient;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -172,6 +173,28 @@ public class UsingWithRestAssuredTest {
   }
 
   @Test(groups = "end-to-end-samples")
+  public void basicIntegrationTest2() {
+
+    Consumer<String> curlConsumer = mock(Consumer.class);
+
+    //@formatter:off
+    given()
+            .redirects().follow(false)
+            .baseUri(MOCK_BASE_URI)
+            .port(MOCK_PORT)
+            .config(getRestAssuredConfig(curlConsumer))
+            .param("secret", "P@assword!")
+            .put()
+            .then()
+            .statusCode(200);
+    //@formatter:on
+
+    verify(curlConsumer).accept(
+            "curl 'http://localhost:" + MOCK_PORT
+                    + "/' -H 'Accept: */*' --compressed -k -v");
+  }
+
+  @Test(groups = "end-to-end-samples")
   public void shouldPrintPostRequestWithMultipartDataProperly() {
 
     Consumer<String> curlConsumer = mock(Consumer.class);
@@ -212,6 +235,27 @@ public class UsingWithRestAssuredTest {
             + "/' -H 'Accept: */*' -H 'Content-Type: application/json; charset=UTF-8' --data-binary 'name=Administração' --compressed -k -v");
   }
 
+  @Test(groups = "end-to-end-samples")
+  public void shouldPrintBody2() {
+
+    Consumer<String> curlConsumer = mock(Consumer.class);
+
+    //@formatter:off
+    RequestSpecification request = given()
+            .baseUri(MOCK_BASE_URI)
+            .port(MOCK_PORT)
+            .config(config()
+                    .httpClient(httpClientConfig()
+                            .reuseHttpClientInstance()))
+            .contentType(ContentType.JSON)
+            .body("name=Administração")
+            .when();
+
+    request.post("/");
+
+    request.post("/");
+    //@formatter:on
+}
 
 
   @Test(groups = "end-to-end-samples")
@@ -359,6 +403,12 @@ public class UsingWithRestAssuredTest {
     public HttpClient createHttpClient() {
       AbstractHttpClient client = new DefaultHttpClient();
       client.addRequestInterceptor(new CurlTestingInterceptor(curlConsumer));
+      client.addResponseInterceptor(new HttpResponseInterceptor() {
+        @Override
+        public void process(HttpResponse response, HttpContext context) throws HttpException, IOException {
+          EntityUtils.consume(response.getEntity());
+        }
+      });
       return client;
     }
   }
@@ -374,7 +424,6 @@ public class UsingWithRestAssuredTest {
     @Override
     public void process(HttpRequest request, HttpContext context)
         throws HttpException, IOException {
-
 
         Options options = Options.builder()
             .printSingleliner()
