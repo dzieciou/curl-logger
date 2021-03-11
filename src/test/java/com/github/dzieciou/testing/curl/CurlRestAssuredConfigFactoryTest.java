@@ -1,6 +1,7 @@
 package com.github.dzieciou.testing.curl;
 
 
+import io.restassured.specification.RequestSpecification;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
@@ -21,6 +22,7 @@ import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
 
+import static io.restassured.RestAssured.config;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
@@ -99,6 +101,24 @@ public class CurlRestAssuredConfigFactoryTest {
         .get("/anypath2")
         .then()
         .statusCode(200);
+  }
+
+  @Test
+  public void shouldSentSameRequestTwice() {
+    // Verifying fix for https://github.com/dzieciou/curl-logger/issues/37
+
+    //@formatter:off
+    RequestSpecification request = RestAssured.given()
+            .baseUri(MOCK_BASE_URI)
+            .port(MOCK_PORT)
+            .config(CurlRestAssuredConfigFactory.createConfig())
+            .body("anything")
+            .when();
+
+    request.post("/");
+
+    request.post("/");
+    //@formatter:on
   }
 
   @AfterClass
