@@ -332,8 +332,13 @@ given()
 
 ## Releases
 
+2.0.1:
+* Bug fix: Do not reuse HTTP client instance across multiple/parallel requests (fix for [#37](https://github.com/dzieciou/curl-logger/issues/37))
+* Bug fix: Make CurlHandler interface public (fix for [#56](https://github.com/dzieciou/curl-logger/issues/56))
+
 2.0.0:
-* Fix to invalid escaping of characters longer than 8 bits (#47, thanks to Srepfler Srdan for reporting it)
+* Fix to invalid escaping of characters longer than 8 bits ([#47](https://github.com/dzieciou/curl-logger/issues/47), 
+  thanks to Srepfler Srdan for reporting it)
 * Tested with latest REST-assured (4.3.1)
 * Support for custom log levels (thanks to Jérémie Bresson for pull request)
 * Support for custom curl handlers 
@@ -343,26 +348,26 @@ given()
 1.0.5:
 * Upgrade to REST-assured 4.0.0.
 * Update test scope dependencies.
-* Fix character escaping for both POSIX and Windows platforms (many thanks to Chirag008 for rausung
-the issue: https://github.com/dzieciou/curl-logger/issues/25)
+* Bug fix: fix character escaping for both POSIX and Windows platforms (many thanks to Chirag008 for raising
+the issue: [#25](https://github.com/dzieciou/curl-logger/issues/25))
 
 1.0.4:
 * Bug fix: HTTPS protocol was not always recognized correctly 
-(https://github.com/dzieciou/curl-logger/issues/17). Many thanks to pafitchett-ks for troubleshooting.
+([#17](https://github.com/dzieciou/curl-logger/issues/17)). Many thanks to pafitchett-ks for troubleshooting.
 * Support slf4j 1.8.0-beta2.
 * Support rest-assured 3.2.0. 
 
 1.0.3:
 * Bug fix: Invalid basic authentication headers are failing curl generation 
-(https://github.com/dzieciou/curl-logger/issues/15)
+([#15](https://github.com/dzieciou/curl-logger/issues/15))
 
 1.0.2:
 * Bug fix: CurlLogger was failing when multiple Cookie headers are present in HTTP Request. Now it
-only prints warning (https://github.com/dzieciou/curl-logger/issues/13)
+  only prints warning ([#37](https://github.com/dzieciou/curl-logger/issues/13))
 
 1.0.1:
 * Bug fix: `CurlLoggingRestAssuredConfigBuilder` was not updating `RestAssuredConfig` properly 
-(https://github.com/dzieciou/curl-logger/issues/4): 
+([#4](https://github.com/dzieciou/curl-logger/issues/4)): 
 
 1.0.0:
 
@@ -375,16 +380,19 @@ only prints warning (https://github.com/dzieciou/curl-logger/issues/13)
 
 * Added possibility to print shorter versions of curl parameters, e.g., -v instead of --verbose
 * Added possibility to modify a curl command before printing it, inspired by the suggestion from 
-Alexey Dushen (blacky0x0): https://github.com/dzieciou/curl-logger/issues/2.
+  Alexey Dushen (blacky0x0): [#2](https://github.com/dzieciou/curl-logger/issues/2).
 
 0.6:
-* Fixed bug: For each cookie a separate `-b cookie=content` parameter was generated (https://github.com/dzieciou/curl-logger/issues/4)
+* Fixed bug: For each cookie a separate `-b cookie=content` parameter was generated 
+  ([#6](https://github.com/dzieciou/curl-logger/issues/4))
 * Upgraded to REST-assured 3.0.2
-* Simplified curl-logger configuration with `CurlLoggingRestAssuredConfigBuilder`, based on suggestion from Tao Zhang (https://github.com/dzieciou/curl-logger/issues/4)
+* Simplified curl-logger configuration with `CurlLoggingRestAssuredConfigBuilder`, based on suggestion from Tao Zhang 
+([#4](https://github.com/dzieciou/curl-logger/issues/4))
 
 0.5:
 
-* Upgraded to REST-assured 3.0.1 that contains important fix impacting curl-logger: Cookie attributes are no longer sent in request in accordance with RFC6265. 
+* Upgraded to REST-assured 3.0.1 that contains important fix impacting curl-logger: Cookie attributes are no longer sent
+  in request in accordance with RFC6265. 
 * Fixed bug: cookie values can have = sign inside so we need to get around them somehow
 * Cookie strings are now escaped
 * `CurlLoggingInterceptor`'s constructor is now protected to make extending it possible 
