@@ -334,6 +334,7 @@ given()
 
 2.0.1:
 * Bug fix: Do not reuse HTTP client instance across multiple/parallel requests (fix for [#37](https://github.com/dzieciou/curl-logger/issues/37))
+* Bug fix: Make CurlHandler interface public (fix for [#56](https://github.com/dzieciou/curl-logger/issues/56))
 
 2.0.0:
 * Fix to invalid escaping of characters longer than 8 bits ([#47](https://github.com/dzieciou/curl-logger/issues/47), 
