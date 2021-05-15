@@ -13,6 +13,7 @@ public class Options {
   private Consumer<CurlCommand> curlUpdater;
   private Platform targetPlatform = Platform.RECOGNIZE_AUTOMATICALLY;
   private boolean escapeNonAscii;
+  private boolean printInferredMethods;
 
   private Options() {
   }
@@ -48,6 +49,8 @@ public class Options {
   public Platform getTargetPlatform() {
     return targetPlatform;
   }
+
+  public boolean printInferredMethods() { return printInferredMethods; }
 
   public static class Builder {
 
@@ -140,6 +143,11 @@ public class Options {
      */
     public Builder useLogLevel(Level level) {
       options.logLevel = level;
+      return this;
+    }
+
+    public Builder printInferredMethods() {
+      options.printInferredMethods = true;
       return this;
     }
 

@@ -158,6 +158,35 @@ public class Http2CurlTest {
             "curl 'http://test.com:8080/items/query?x=y#z' --header 'Host: H' --compressed --insecure --verbose"));
   }
 
+  @Test
+  public void shouldPrintGetRequestWithMethodProperly() throws Exception {
+    HttpGet getRequest = new HttpGet("http://test.com:8080/items/query?x=y#z");
+
+    Options options = Options.builder().targetPlatform(Platform.UNIX).useShortForm()
+            .printSingleliner().printInferredMethods().build();
+
+    assertThat(new Http2Curl(options).generateCurl(getRequest),
+            equalTo("curl 'http://test.com:8080/items/query?x=y#z' -X GET --compressed -k -v"));
+  }
+
+  @Test
+  public void shouldPrintPostRequestWithMethodProperly() throws Exception {
+    HttpPost postRequest = new HttpPost("http://google.pl/");
+    List<NameValuePair> postParameters = new ArrayList<>();
+    postParameters.add(new BasicNameValuePair("param1", "param1_value"));
+
+    postRequest.setEntity(new UrlEncodedFormEntity(postParameters));
+    postRequest.setHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    Options options = Options.builder().targetPlatform(Platform.UNIX).useShortForm()
+            .printSingleliner().printInferredMethods().build();
+
+    assertThat(new Http2Curl(options).generateCurl(postRequest),
+            equalTo(
+                    "curl 'http://google.pl/' -X POST -H 'Content-Type: application/x-www-form-urlencoded' --data-binary 'param1=param1_value' --compressed -k -v"));
+  }
+
+
   public Http2Curl getNonWindowsHttp2Curl() {
     return new Http2Curl(
         Options.builder().targetPlatform(Platform.UNIX).useShortForm().printSingleliner().build());

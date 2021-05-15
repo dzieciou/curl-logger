@@ -175,9 +175,7 @@ public class Http2Curl {
     }
   }
 
-  @SuppressWarnings("deprecation")
-  private CurlCommand http2curl(HttpRequest request)
-      throws NoSuchFieldException, IllegalAccessException, IOException {
+  private CurlCommand http2curl(HttpRequest request) throws IOException {
 
     Headers headers = new Headers(Arrays.asList(request.getAllHeaders()));
     CurlCommand curl = new CurlCommand();
@@ -203,12 +201,16 @@ public class Http2Curl {
     }
 
     String requestMethod = request.getRequestLine().getMethod();
-    if ("GET".equals(requestMethod)) {
-      // skip
-    } else if ("POST".equals(requestMethod) && curl.hasData()) {
-      // skip
-    } else {
+    if (options.printInferredMethods()) {
       curl.setMethod(requestMethod);
+    } else {
+      if ("GET".equals(requestMethod)) {
+        // skip
+      } else if ("POST".equals(requestMethod) && curl.hasData()) {
+        // skip
+      } else {
+        curl.setMethod(requestMethod);
+      }
     }
 
     headers.toProcess = handleAuthenticationHeader(headers.toProcess, curl);
