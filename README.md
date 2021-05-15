@@ -32,7 +32,7 @@ Latest release:
 <dependency>
   <groupId>com.github.dzieciou.testing</groupId>
   <artifactId>curl-logger</artifactId>
-  <version>2.0.1</version>
+  <version>2.1.0</version>
 </dependency>
 ```
    
@@ -222,6 +222,15 @@ curl 'http://google.pl/' -header 'Content-Type: application/x-www-form-urlencode
 By default `CurlRestAssuredConfigFactory#createConfig` create configuration  that prints
  a curl command parameters in short form.
 
+### Printing request methods
+
+By default, curl-logger does not print HTTP method for GET requests and POST requests without data. To always print 
+request method, method configure curl-logger as follows:
+
+```java
+Options.builder().alwaysPrintMethod().build();
+```
+
 ### Updating curl command before print
 
 The library provides a way to modify curl command before 
@@ -331,6 +340,10 @@ given()
 ```
 
 ## Releases
+
+2.1.0:
+* Support for `alwaysPrintMethod` option that enables always printing HTTP method of a request (many thanks to Luigi 
+  Cardito for his pull request)
 
 2.0.1:
 * Bug fix: Do not reuse HTTP client instance across multiple/parallel requests (fix for [#37](https://github.com/dzieciou/curl-logger/issues/37))
