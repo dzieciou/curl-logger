@@ -1,6 +1,6 @@
 package com.github.dzieciou.testing.curl;
 
-interface CurlHandler {
+public interface CurlHandler {
 
   /**
    * Handle generated curl expression.
