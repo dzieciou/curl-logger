@@ -13,7 +13,7 @@ public class Options {
   private Consumer<CurlCommand> curlUpdater;
   private Platform targetPlatform = Platform.RECOGNIZE_AUTOMATICALLY;
   private boolean escapeNonAscii;
-  private boolean printInferredMethods;
+  private boolean alwaysPrintMethod;
 
   private Options() {
   }
@@ -50,7 +50,7 @@ public class Options {
     return targetPlatform;
   }
 
-  public boolean printInferredMethods() { return printInferredMethods; }
+  public boolean alwaysPrintMethod() { return alwaysPrintMethod; }
 
   public static class Builder {
 
@@ -146,8 +146,11 @@ public class Options {
       return this;
     }
 
-    public Builder printInferredMethods() {
-      options.printInferredMethods = true;
+    /**
+     * Always print HTTP method, including GET method.
+     */
+    public Builder alwaysPrintMethod() {
+      options.alwaysPrintMethod = true;
       return this;
     }
 

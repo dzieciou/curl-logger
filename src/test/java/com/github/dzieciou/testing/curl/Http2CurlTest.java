@@ -163,7 +163,7 @@ public class Http2CurlTest {
     HttpGet getRequest = new HttpGet("http://test.com:8080/items/query?x=y#z");
 
     Options options = Options.builder().targetPlatform(Platform.UNIX).useShortForm()
-            .printSingleliner().printInferredMethods().build();
+            .printSingleliner().alwaysPrintMethod().build();
 
     assertThat(new Http2Curl(options).generateCurl(getRequest),
             equalTo("curl 'http://test.com:8080/items/query?x=y#z' -X GET --compressed -k -v"));
@@ -179,7 +179,7 @@ public class Http2CurlTest {
     postRequest.setHeader("Content-Type", "application/x-www-form-urlencoded");
 
     Options options = Options.builder().targetPlatform(Platform.UNIX).useShortForm()
-            .printSingleliner().printInferredMethods().build();
+            .printSingleliner().alwaysPrintMethod().build();
 
     assertThat(new Http2Curl(options).generateCurl(postRequest),
             equalTo(

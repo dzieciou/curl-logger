@@ -201,7 +201,7 @@ public class Http2Curl {
     }
 
     String requestMethod = request.getRequestLine().getMethod();
-    if (options.printInferredMethods()) {
+    if (options.alwaysPrintMethod()) {
       curl.setMethod(requestMethod);
     } else {
       if ("GET".equals(requestMethod)) {
