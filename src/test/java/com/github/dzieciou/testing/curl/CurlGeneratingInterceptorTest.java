@@ -18,7 +18,6 @@ import com.github.valfirst.slf4jtest.TestLoggerFactory;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
 import java.util.ArrayList;
-
 import java.util.Collections;
 import java.util.List;
 import org.apache.http.client.HttpClient;
@@ -31,7 +30,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import uk.org.lidalia.slf4jext.Level;
 
-
 public class CurlGeneratingInterceptorTest {
 
   private static final int MOCK_PORT = 9999;
@@ -43,9 +41,10 @@ public class CurlGeneratingInterceptorTest {
   private static RestAssuredConfig getRestAssuredConfig(
       CurlGeneratingInterceptor curlGeneratingInterceptor) {
     return config()
-        .httpClient(httpClientConfig()
-            .reuseHttpClientInstance()
-            .httpClientFactory(new MyHttpClientFactory(curlGeneratingInterceptor)));
+        .httpClient(
+            httpClientConfig()
+                .reuseHttpClientInstance()
+                .httpClientFactory(new MyHttpClientFactory(curlGeneratingInterceptor)));
   }
 
   @BeforeClass
@@ -62,13 +61,13 @@ public class CurlGeneratingInterceptorTest {
     log.clearAll();
     Options OPTIONS = Options.builder().dontLogStacktrace().build();
     List<CurlHandler> handlers = Collections.singletonList(new CurlLogger());
-    RestAssuredConfig restAssuredConfig = getRestAssuredConfig(
-        new CurlGeneratingInterceptor(OPTIONS, handlers));
+    RestAssuredConfig restAssuredConfig =
+        getRestAssuredConfig(new CurlGeneratingInterceptor(OPTIONS, handlers));
 
     // when
-    //@formatter:off
     given()
-        .redirects().follow(false)
+        .redirects()
+        .follow(false)
         .baseUri(MOCK_BASE_URI)
         .port(MOCK_PORT)
         .config(restAssuredConfig)
@@ -76,7 +75,6 @@ public class CurlGeneratingInterceptorTest {
         .get("/")
         .then()
         .statusCode(200);
-    //@formatter:on
 
     // then
     assertThat(log.getLoggingEvents().size(), is(1));
@@ -93,13 +91,13 @@ public class CurlGeneratingInterceptorTest {
     log.clearAll();
     Options options = Options.builder().logStacktrace().build();
     List<CurlHandler> handlers = Collections.singletonList(new CurlLogger());
-    RestAssuredConfig restAssuredConfig = getRestAssuredConfig(
-        new CurlGeneratingInterceptor(options, handlers));
+    RestAssuredConfig restAssuredConfig =
+        getRestAssuredConfig(new CurlGeneratingInterceptor(options, handlers));
 
     // when
-    //@formatter:off
     given()
-        .redirects().follow(false)
+        .redirects()
+        .follow(false)
         .baseUri(MOCK_BASE_URI)
         .port(MOCK_PORT)
         .config(restAssuredConfig)
@@ -107,14 +105,16 @@ public class CurlGeneratingInterceptorTest {
         .get("/shouldLogStacktraceWhenEnabled")
         .then()
         .statusCode(200);
-    //@formatter:on
 
     // then
     assertThat(log.getAllLoggingEvents().size(), is(1));
     LoggingEvent firstEvent = log.getLoggingEvents().get(0);
     assertThat(firstEvent.getLevel(), is(Level.DEBUG));
-    assertThat(firstEvent.getMessage(), both(startsWith("curl")).and(containsString("generated"))
-        .and(containsString(("java.lang.Thread.getStackTrace"))));
+    assertThat(
+        firstEvent.getMessage(),
+        both(startsWith("curl"))
+            .and(containsString("generated"))
+            .and(containsString(("java.lang.Thread.getStackTrace"))));
   }
 
   @Test
@@ -124,13 +124,13 @@ public class CurlGeneratingInterceptorTest {
     final List<String> curls = new ArrayList<>();
     CurlHandler handler = (curl, options1) -> curls.add(curl);
     List<CurlHandler> handlers = Collections.singletonList(handler);
-    RestAssuredConfig restAssuredConfig = getRestAssuredConfig(
-        new CurlGeneratingInterceptor(options, handlers));
+    RestAssuredConfig restAssuredConfig =
+        getRestAssuredConfig(new CurlGeneratingInterceptor(options, handlers));
 
     // when
-    //@formatter:off
     given()
-        .redirects().follow(false)
+        .redirects()
+        .follow(false)
         .baseUri(MOCK_BASE_URI)
         .port(MOCK_PORT)
         .config(restAssuredConfig)
@@ -138,7 +138,6 @@ public class CurlGeneratingInterceptorTest {
         .get("/shouldLogStacktraceWhenEnabled")
         .then()
         .statusCode(200);
-    //@formatter:on
 
     // then
     assertThat(handlers.size(), is(1));
@@ -166,7 +165,8 @@ public class CurlGeneratingInterceptorTest {
 
     @Override
     public HttpClient createHttpClient() {
-      @SuppressWarnings("deprecation") AbstractHttpClient client = new DefaultHttpClient();
+      @SuppressWarnings("deprecation")
+      AbstractHttpClient client = new DefaultHttpClient();
       client.addRequestInterceptor(curlGeneratingInterceptor);
       return client;
     }

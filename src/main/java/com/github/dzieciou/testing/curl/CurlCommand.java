@@ -31,7 +31,6 @@
 
 package com.github.dzieciou.testing.curl;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -117,12 +116,17 @@ public class CurlCommand {
     return asString(Platform.RECOGNIZE_AUTOMATICALLY, false, true, true);
   }
 
-  public String asString(Platform targetPlatform, boolean useShortForm, boolean printMultiliner, boolean escapeNonAscii) {
-    return new Serializer(targetPlatform, useShortForm, printMultiliner, escapeNonAscii).serialize(this);
+  public String asString(
+      Platform targetPlatform,
+      boolean useShortForm,
+      boolean printMultiliner,
+      boolean escapeNonAscii) {
+    return new Serializer(targetPlatform, useShortForm, printMultiliner, escapeNonAscii)
+        .serialize(this);
   }
 
   public boolean hasData() {
-    return  !datasBinary.isEmpty();
+    return !datasBinary.isEmpty();
   }
 
   public static class Header {
@@ -201,8 +205,11 @@ public class CurlCommand {
       SHORT_PARAMETER_NAMES.put("--verbose", "-v");
     }
 
-
-    public Serializer(Platform targetPlatform, boolean useShortForm, boolean printMultiliner, boolean escapeNonAscii) {
+    public Serializer(
+        Platform targetPlatform,
+        boolean useShortForm,
+        boolean printMultiliner,
+        boolean escapeNonAscii) {
       this.targetPlatform = targetPlatform;
       this.useShortForm = useShortForm;
       this.printMultiliner = printMultiliner;
@@ -211,14 +218,14 @@ public class CurlCommand {
 
     private static String parameterName(String longParameterName, boolean useShortForm) {
       return useShortForm
-          ? (SHORT_PARAMETER_NAMES.get(longParameterName) == null ? longParameterName
-          : SHORT_PARAMETER_NAMES
-              .get(longParameterName))
+          ? (SHORT_PARAMETER_NAMES.get(longParameterName) == null
+              ? longParameterName
+              : SHORT_PARAMETER_NAMES.get(longParameterName))
           : longParameterName;
     }
 
-    private static List<String> line(boolean useShortForm, String longParameterName,
-        String... arguments) {
+    private static List<String> line(
+        boolean useShortForm, String longParameterName, String... arguments) {
       List<String> line = new ArrayList<>(Arrays.asList(arguments));
       line.add(0, parameterName(longParameterName, useShortForm));
       return line;
@@ -227,33 +234,30 @@ public class CurlCommand {
     /**
      * Replace quote by double quote (but not by \") because it is recognized by both cmd.exe and MS
      * Crt arguments parser.
-     * <p>
-     * Replace % by "%" because it could be expanded to an environment variable value. So %% becomes
-     * "%""%". Even if an env variable "" (2 doublequotes) is declared, the cmd.exe will not
+     *
+     * <p>Replace % by "%" because it could be expanded to an environment variable value. So %%
+     * becomes "%""%". Even if an env variable "" (2 doublequotes) is declared, the cmd.exe will not
      * substitute it with its value.
-     * <p>
-     * Replace each backslash with double backslash to make sure MS Crt arguments parser won't
+     *
+     * <p>Replace each backslash with double backslash to make sure MS Crt arguments parser won't
      * collapse them.
-     * <p>
-     * Replace new line outside of quotes since cmd.exe doesn't let to do it inside.
+     *
+     * <p>Replace new line outside of quotes since cmd.exe doesn't let to do it inside.
      */
     private static String escapeStringWin(String s) {
       // Escaping non-printable ASCII characters is limited only to few characters
       // Escaping non-ASCII characters is not supported
       return "\""
-          + s
-          .replaceAll("\"", "\"\"")
-          .replaceAll("%", "\"%\"")
-          .replaceAll("\\\\", "\\\\")
-          .replaceAll("[\r\n]+", "\"^\r\n$0\"")
+          + s.replaceAll("\"", "\"\"")
+              .replaceAll("%", "\"%\"")
+              .replaceAll("\\\\", "\\\\")
+              .replaceAll("[\r\n]+", "\"^\r\n$0\"")
           + "\"";
     }
 
     private String escapeStringPosix(String s) {
 
-      String escaped = s.chars()
-          .mapToObj(c -> escape((char) c))
-          .collect(Collectors.joining());
+      String escaped = s.chars().mapToObj(c -> escape((char) c)).collect(Collectors.joining());
 
       if (!escaped.equals(s)) {
         // ANSI-C Quoting performed
@@ -261,21 +265,25 @@ public class CurlCommand {
       } else {
         return "'" + escaped + "'";
       }
-
     }
 
     private String escape(char c) {
       if (isAscii(c)) {
         // Perform ANSI-C Quoting for ASCII characters
         // https://www.gnu.org/software/bash/manual/html_node/ANSI_002dC-Quoting.html
-        switch(c) {
-          case '\n': return "\\n";
-          case '\'': return "\\'";
-          case '\t': return "\\t";
-          case '\r': return "\\r";
-          // '@' character has a special meaning in --data-binary (loading a file)
-          // So we need to escape it
-          case '@': return escapeAsHex(c);
+        switch (c) {
+          case '\n':
+            return "\\n";
+          case '\'':
+            return "\\'";
+          case '\t':
+            return "\\t";
+          case '\r':
+            return "\\r";
+            // '@' character has a special meaning in --data-binary (loading a file)
+            // So we need to escape it
+          case '@':
+            return escapeAsHex(c);
           default:
             return isAsciiPrintable(c) ? String.valueOf(c) : escapeAsHex(c);
         }
@@ -297,7 +305,7 @@ public class CurlCommand {
     private static String escapeAsHex(char c) {
       int code = c;
       if (code < 256) {
-        return String.format("\\x%02x", (int)c);
+        return String.format("\\x%02x", (int) c);
       }
       return String.format("\\u%04x", (int) c);
     }
@@ -305,28 +313,38 @@ public class CurlCommand {
     public String serialize(CurlCommand curl) {
       List<List<String>> command = new ArrayList<>();
 
-      command
-          .add(line(useShortForm, "curl", quoteString(curl.url).replaceAll("[[{}\\\\]]", "\\$&")));
+      command.add(
+          line(useShortForm, "curl", quoteString(curl.url).replaceAll("[[{}\\\\]]", "\\$&")));
 
       curl.method.ifPresent(method -> command.add(line(useShortForm, "--request", method)));
 
       curl.cookieHeader.ifPresent(
           cookieHeader -> command.add(line(useShortForm, "--cookie", quoteString(cookieHeader))));
 
-      curl.headers.forEach(header
-          -> command.add(line(useShortForm, "--header",
-          quoteString(header.getName() + ": " + header.getValue()))));
+      curl.headers.forEach(
+          header ->
+              command.add(
+                  line(
+                      useShortForm,
+                      "--header",
+                      quoteString(header.getName() + ": " + header.getValue()))));
 
-      curl.formParts.forEach(formPart
-          -> command.add(line(useShortForm, "--form",
-          quoteString(formPart.getName() + "=" + formPart.getContent()))));
+      curl.formParts.forEach(
+          formPart ->
+              command.add(
+                  line(
+                      useShortForm,
+                      "--form",
+                      quoteString(formPart.getName() + "=" + formPart.getContent()))));
 
-      curl.datasBinary
-          .forEach(data -> command.add(line(useShortForm, "--data-binary", escapeString(data))));
+      curl.datasBinary.forEach(
+          data -> command.add(line(useShortForm, "--data-binary", escapeString(data))));
 
-      curl.serverAuthentication.ifPresent(sa
-          -> command
-          .add(line(useShortForm, "--user", quoteString(sa.getUser() + ":" + sa.getPassword()))));
+      curl.serverAuthentication.ifPresent(
+          sa ->
+              command.add(
+                  line(
+                      useShortForm, "--user", quoteString(sa.getUser() + ":" + sa.getPassword()))));
 
       if (curl.compressed) {
         command.add(line(useShortForm, "--compressed"));
@@ -361,17 +379,11 @@ public class CurlCommand {
     }
 
     private static String quoteStringWin(String s) {
-      return "\""
-          + s
-          + "\"";
+      return "\"" + s + "\"";
     }
 
     private static String quoteStringPosix(String s) {
-      return "'"
-          + s
-          + "'";
+      return "'" + s + "'";
     }
   }
-
-
 }

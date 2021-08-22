@@ -1,8 +1,6 @@
 package com.github.dzieciou.testing.curl;
 
-
 public enum Platform {
-
   RECOGNIZE_AUTOMATICALLY(
       System.getProperty("os.name") != null && System.getProperty("os.name").startsWith("Windows"),
       System.lineSeparator()),
@@ -26,5 +24,4 @@ public enum Platform {
   public String lineSeparator() {
     return lineSeparator;
   }
-
 }

@@ -1,10 +1,8 @@
 package com.github.dzieciou.testing.curl;
 
-
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.apache.http.client.HttpClient;
@@ -91,8 +89,8 @@ public class CurlRestAssuredConfigFactory {
    * @param handlers handlers that can log or process in any other way the generated curl command.
    * @return updated configuration; note original configuration remain unchanged.
    */
-  public static RestAssuredConfig updateConfig(RestAssuredConfig config,
-      List<CurlHandler> handlers) {
+  public static RestAssuredConfig updateConfig(
+      RestAssuredConfig config, List<CurlHandler> handlers) {
     return updateConfig(config, getDefaultOptions(), handlers);
   }
 
@@ -104,13 +102,13 @@ public class CurlRestAssuredConfigFactory {
    * @param handlers handlers that can log or process in any other way the generated curl command.
    * @return updated configuration; note original configuration remain unchanged.
    */
-  public static RestAssuredConfig updateConfig(RestAssuredConfig config, Options options,
-      List<CurlHandler> handlers) {
+  public static RestAssuredConfig updateConfig(
+      RestAssuredConfig config, Options options, List<CurlHandler> handlers) {
     HttpClientConfig.HttpClientFactory originalFactory = getHttpClientFactory(config);
-    CurlGeneratingInterceptor interceptor = new CurlGeneratingInterceptor(options,
-        handlers);
-    return config
-        .httpClient(config.getHttpClientConfig()
+    CurlGeneratingInterceptor interceptor = new CurlGeneratingInterceptor(options, handlers);
+    return config.httpClient(
+        config
+            .getHttpClientConfig()
             .dontReuseHttpClientInstance()
             .httpClientFactory(new MyHttpClientFactory(originalFactory, interceptor)));
   }
@@ -133,8 +131,8 @@ public class CurlRestAssuredConfigFactory {
       Field f = HttpClientConfig.class.getDeclaredField("httpClientFactory");
       f.setAccessible(true);
       HttpClientConfig httpClientConfig = config.getHttpClientConfig();
-      HttpClientConfig.HttpClientFactory httpClientFactory = (HttpClientConfig.HttpClientFactory) f
-          .get(httpClientConfig);
+      HttpClientConfig.HttpClientFactory httpClientFactory =
+          (HttpClientConfig.HttpClientFactory) f.get(httpClientConfig);
       f.setAccessible(false);
       return httpClientFactory;
     } catch (NoSuchFieldException | IllegalAccessException e) {
@@ -147,7 +145,8 @@ public class CurlRestAssuredConfigFactory {
     private final HttpClientConfig.HttpClientFactory wrappedFactory;
     private final CurlGeneratingInterceptor curlGeneratingInterceptor;
 
-    public MyHttpClientFactory(HttpClientConfig.HttpClientFactory wrappedFactory,
+    public MyHttpClientFactory(
+        HttpClientConfig.HttpClientFactory wrappedFactory,
         CurlGeneratingInterceptor curlGeneratingInterceptor) {
       this.wrappedFactory = wrappedFactory;
       this.curlGeneratingInterceptor = curlGeneratingInterceptor;
@@ -161,6 +160,4 @@ public class CurlRestAssuredConfigFactory {
       return client;
     }
   }
-
-
 }
