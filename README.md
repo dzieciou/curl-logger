@@ -60,6 +60,8 @@ RestAssuredConfig config = ...;
 config = CurlRestAssuredConfigFactory.updateConfig(config);  
 ```
 
+NOTE: The library updates `httpClient` attribute of a `RestAssuredConfig` instance, so your changes to this attribute will be overwritten. Also, if you modify `htttpClient` attribute after calling `updateConfig()` or `createConfig()` method, curl-logger will no longer log requests.
+
 The library provides a number of options for the way curl is generated and logged. They can be
 defined with `Options` class. For instance:
  
