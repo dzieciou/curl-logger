@@ -14,7 +14,7 @@ public class TemporaryFolder {
   }
 
   public Path createFile() throws IOException {
-    return Files.createFile(this.dir.resolve("test-" + Long.toString(System.nanoTime())));
+    return Files.createFile(this.dir.resolve("test-" + System.nanoTime()));
   }
 
   public void deleteAll() {
@@ -22,7 +22,7 @@ public class TemporaryFolder {
       for (Path fpath : directoryStream) {
         fpath.toFile().delete();
       }
-    } catch (IOException ex) {
+    } catch (IOException ignored) {
     }
   }
 }

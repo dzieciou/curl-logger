@@ -257,7 +257,7 @@ public class CurlCommand {
 
       if (!escaped.equals(s)) {
         // ANSI-C Quoting performed
-        return "$\'" + escaped + "'";
+        return "$'" + escaped + "'";
       } else {
         return "'" + escaped + "'";
       }

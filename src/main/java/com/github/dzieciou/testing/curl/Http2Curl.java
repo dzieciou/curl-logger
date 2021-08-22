@@ -243,7 +243,7 @@ public class Http2Curl {
       CurlCommand curl) throws IOException {
 
     List<String> parameters = Arrays.asList(contentType.split(";"));
-    parameters = parameters.stream().map(s -> s.trim()).collect(Collectors.toList());
+    parameters = parameters.stream().map(String::trim).collect(Collectors.toList());
     contentType = parameters.remove(0);
 
     headers.ignored.add("Content-Length");

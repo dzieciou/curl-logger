@@ -18,7 +18,8 @@ import com.github.valfirst.slf4jtest.TestLoggerFactory;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
 import java.util.ArrayList;
-import java.util.Arrays;
+
+import java.util.Collections;
 import java.util.List;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.AbstractHttpClient;
@@ -60,7 +61,7 @@ public class CurlGeneratingInterceptorTest {
     log = TestLoggerFactory.getTestLogger("curl");
     log.clearAll();
     Options OPTIONS = Options.builder().dontLogStacktrace().build();
-    List<CurlHandler> handlers = Arrays.asList(new CurlLogger());
+    List<CurlHandler> handlers = Collections.singletonList(new CurlLogger());
     RestAssuredConfig restAssuredConfig = getRestAssuredConfig(
         new CurlGeneratingInterceptor(OPTIONS, handlers));
 
@@ -91,7 +92,7 @@ public class CurlGeneratingInterceptorTest {
     log = TestLoggerFactory.getTestLogger("curl");
     log.clearAll();
     Options options = Options.builder().logStacktrace().build();
-    List<CurlHandler> handlers = Arrays.asList(new CurlLogger());
+    List<CurlHandler> handlers = Collections.singletonList(new CurlLogger());
     RestAssuredConfig restAssuredConfig = getRestAssuredConfig(
         new CurlGeneratingInterceptor(options, handlers));
 
@@ -121,13 +122,8 @@ public class CurlGeneratingInterceptorTest {
     // given
     Options options = Options.builder().logStacktrace().build();
     final List<String> curls = new ArrayList<>();
-    CurlHandler handler = new CurlHandler() {
-      @Override
-      public void handle(String curl, Options options) {
-        curls.add(curl);
-      }
-    };
-    List<CurlHandler> handlers = Arrays.asList(handler);
+    CurlHandler handler = (curl, options1) -> curls.add(curl);
+    List<CurlHandler> handlers = Collections.singletonList(handler);
     RestAssuredConfig restAssuredConfig = getRestAssuredConfig(
         new CurlGeneratingInterceptor(options, handlers));
 

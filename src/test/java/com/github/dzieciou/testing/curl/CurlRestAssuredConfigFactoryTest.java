@@ -1,6 +1,9 @@
 package com.github.dzieciou.testing.curl;
 
 
+import io.restassured.RestAssured;
+import io.restassured.config.HttpClientConfig;
+import io.restassured.config.RestAssuredConfig;
 import io.restassured.specification.RequestSpecification;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
@@ -18,11 +21,6 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 
-import io.restassured.RestAssured;
-import io.restassured.config.HttpClientConfig;
-import io.restassured.config.RestAssuredConfig;
-
-import static io.restassured.RestAssured.config;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
@@ -129,7 +127,7 @@ public class CurlRestAssuredConfigFactoryTest {
 
   private static class ContainsRequestInterceptor extends TypeSafeDiagnosingMatcher<AbstractHttpClient> {
 
-    private Class<? extends HttpRequestInterceptor> expectedRequestedInterceptor;
+    private final Class<? extends HttpRequestInterceptor> expectedRequestedInterceptor;
 
     public ContainsRequestInterceptor(Class<? extends HttpRequestInterceptor> expectedRequestedInterceptor) {
       this.expectedRequestedInterceptor = expectedRequestedInterceptor;

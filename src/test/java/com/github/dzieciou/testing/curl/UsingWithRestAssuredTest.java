@@ -1,31 +1,11 @@
 package com.github.dzieciou.testing.curl;
 
 
-import static io.restassured.RestAssured.config;
-import static io.restassured.RestAssured.given;
-import static io.restassured.config.HttpClientConfig.httpClientConfig;
-import static io.restassured.config.MultiPartConfig.multiPartConfig;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockserver.integration.ClientAndServer.startClientAndServer;
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.HttpResponse.response;
-
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.http.ContentType;
 import io.restassured.http.Cookie;
 import io.restassured.http.Cookies;
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
-
-import io.restassured.specification.RequestSpecification;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.*;
 import org.apache.http.client.HttpClient;
@@ -38,7 +18,23 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-@SuppressWarnings("unchecked")
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+
+import static io.restassured.RestAssured.config;
+import static io.restassured.RestAssured.given;
+import static io.restassured.config.HttpClientConfig.httpClientConfig;
+import static io.restassured.config.MultiPartConfig.multiPartConfig;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockserver.integration.ClientAndServer.startClientAndServer;
+import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.HttpResponse.response;
+
 public class UsingWithRestAssuredTest {
 
   private static final int MOCK_PORT = 9999;
@@ -347,7 +343,7 @@ public class UsingWithRestAssuredTest {
     tempFolder.deleteAll();
   }
 
-  private class MyHttpClientFactory implements HttpClientConfig.HttpClientFactory {
+  private static class MyHttpClientFactory implements HttpClientConfig.HttpClientFactory {
 
     public final Consumer<String> curlConsumer;
 
@@ -360,12 +356,7 @@ public class UsingWithRestAssuredTest {
     public HttpClient createHttpClient() {
       AbstractHttpClient client = new DefaultHttpClient();
       client.addRequestInterceptor(new CurlTestingInterceptor(curlConsumer));
-      client.addResponseInterceptor(new HttpResponseInterceptor() {
-        @Override
-        public void process(HttpResponse response, HttpContext context) throws HttpException, IOException {
-          EntityUtils.consume(response.getEntity());
-        }
-      });
+      client.addResponseInterceptor((response, context) -> EntityUtils.consume(response.getEntity()));
       return client;
     }
   }

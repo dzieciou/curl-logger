@@ -8,6 +8,7 @@ import com.github.valfirst.slf4jtest.LoggingEvent;
 import com.github.valfirst.slf4jtest.TestLoggerFactory;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.http.client.HttpClient;
@@ -43,7 +44,7 @@ public class UsingWithHttpClientTest {
     return HttpClientBuilder.create()
         .addInterceptorFirst(new CurlGeneratingInterceptor(Options.builder()
             .targetPlatform(Platform.UNIX) // TO ease verifying output curl
-            .build(), Arrays.asList(new CurlLogger())))
+            .build(), Collections.singletonList(new CurlLogger())))
         .build();
   }
 

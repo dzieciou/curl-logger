@@ -12,12 +12,10 @@ import org.testng.annotations.Test;
 
 public class CurlLoggerTest {
 
-  private TestLogger log;
-
   @Test
   public void shouldLogAtErrorLevel() {
     // given
-    log = TestLoggerFactory.getTestLogger("curl");
+    TestLogger log = TestLoggerFactory.getTestLogger("curl");
     log.clearAll();
     Options options = Options.builder().useLogLevel(Level.ERROR).build();
     CurlHandler handler = new CurlLogger();

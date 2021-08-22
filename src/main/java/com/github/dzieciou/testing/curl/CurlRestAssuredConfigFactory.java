@@ -5,6 +5,7 @@ import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.AbstractHttpClient;
@@ -124,7 +125,7 @@ public class CurlRestAssuredConfigFactory {
   }
 
   private static List<CurlHandler> getDefaultHandlers() {
-    return Arrays.asList(new CurlLogger());
+    return Collections.singletonList(new CurlLogger());
   }
 
   private static HttpClientConfig.HttpClientFactory getHttpClientFactory(RestAssuredConfig config) {
