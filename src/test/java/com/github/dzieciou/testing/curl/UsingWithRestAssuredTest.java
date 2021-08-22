@@ -62,7 +62,6 @@ public class UsingWithRestAssuredTest {
 
     Consumer<String> curlConsumer = mock(Consumer.class);
 
-    // @formatter:off
     given()
         .redirects()
         .follow(false)
@@ -80,7 +79,6 @@ public class UsingWithRestAssuredTest {
         .get("/access")
         .then()
         .statusCode(200);
-    // @formatter:on
 
     verify(curlConsumer)
         .accept(
@@ -95,7 +93,7 @@ public class UsingWithRestAssuredTest {
 
     Consumer<String> curlConsumer = mock(Consumer.class);
 
-    // @formatter:off
+
     given()
         .redirects()
         .follow(false)
@@ -117,7 +115,7 @@ public class UsingWithRestAssuredTest {
         .get("/access")
         .then()
         .statusCode(200);
-    // @formatter:on
+    
 
     verify(curlConsumer)
         .accept(
@@ -141,7 +139,7 @@ public class UsingWithRestAssuredTest {
             .setPath("/access")
             .build());
 
-    // @formatter:off
+
     given()
         .redirects()
         .follow(false)
@@ -158,7 +156,7 @@ public class UsingWithRestAssuredTest {
         .get("/access")
         .then()
         .statusCode(200);
-    // @formatter:on
+    
 
     verify(curlConsumer)
         .accept(
@@ -172,7 +170,7 @@ public class UsingWithRestAssuredTest {
 
     Consumer<String> curlConsumer = mock(Consumer.class);
 
-    // @formatter:off
+
     given()
         .redirects()
         .follow(false)
@@ -183,7 +181,7 @@ public class UsingWithRestAssuredTest {
         .get("/")
         .then()
         .statusCode(200);
-    // @formatter:on
+    
 
     verify(curlConsumer)
         .accept("curl 'http://localhost:" + MOCK_PORT + "/' -H 'Accept: */*' --compressed -k -v");
@@ -194,7 +192,7 @@ public class UsingWithRestAssuredTest {
 
     Consumer<String> curlConsumer = mock(Consumer.class);
 
-    // @formatter:off
+
     given()
         .baseUri(MOCK_BASE_URI)
         .port(MOCK_PORT)
@@ -203,7 +201,7 @@ public class UsingWithRestAssuredTest {
         .formParam("parameterX", "parameterXValue")
         .when()
         .post("/");
-    // @formatter:on
+    
 
     verify(curlConsumer)
         .accept(
@@ -219,7 +217,7 @@ public class UsingWithRestAssuredTest {
 
     Consumer<String> curlConsumer = mock(Consumer.class);
 
-    // @formatter:off
+
     given()
         .baseUri(MOCK_BASE_URI)
         .port(MOCK_PORT)
@@ -228,7 +226,7 @@ public class UsingWithRestAssuredTest {
         .body("name=Administração")
         .when()
         .post("/");
-    // @formatter:on
+    
 
     verify(curlConsumer)
         .accept(
@@ -243,7 +241,7 @@ public class UsingWithRestAssuredTest {
 
     Consumer<String> curlConsumer = mock(Consumer.class);
 
-    // @formatter:off
+
     given()
         .baseUri(MOCK_BASE_URI)
         .port(MOCK_PORT)
@@ -252,7 +250,7 @@ public class UsingWithRestAssuredTest {
         .body("{\n'name':\"CKB2\",'salary':'123','age':'23'\n}")
         .when()
         .post("/");
-    // @formatter:on
+    
 
     verify(curlConsumer)
         .accept(
@@ -269,7 +267,7 @@ public class UsingWithRestAssuredTest {
 
     Consumer<String> curlConsumer = mock(Consumer.class);
 
-    // @formatter:off
+
     given()
         .baseUri(MOCK_BASE_URI)
         .port(MOCK_PORT)
@@ -277,7 +275,7 @@ public class UsingWithRestAssuredTest {
         .multiPart("message", "{content:\"interesting\"}", "application/json")
         .when()
         .post("/");
-    // @formatter:on
+    
 
     verify(curlConsumer)
         .accept(
@@ -293,7 +291,7 @@ public class UsingWithRestAssuredTest {
 
     Consumer<String> curlConsumer = mock(Consumer.class);
 
-    // @formatter:off
+
     given()
         .baseUri(MOCK_BASE_URI)
         .port(MOCK_PORT)
@@ -303,7 +301,7 @@ public class UsingWithRestAssuredTest {
         .multiPart("myfile", new File("README.md"), "application/json")
         .when()
         .post("/");
-    // @formatter:on
+    
 
     verify(curlConsumer)
         .accept(
@@ -320,7 +318,7 @@ public class UsingWithRestAssuredTest {
     File tempFile = tempFolder.createFile().toFile();
     FileUtils.writeStringToFile(tempFile, "{ 'message' : 'hello world'}", Charset.defaultCharset());
 
-    // @formatter:off
+
     given()
         .baseUri(MOCK_BASE_URI)
         .port(MOCK_PORT)
@@ -328,7 +326,7 @@ public class UsingWithRestAssuredTest {
         .body(tempFile)
         .when()
         .post("/");
-    // @formatter:on
+    
 
     verify(curlConsumer)
         .accept(
@@ -342,7 +340,7 @@ public class UsingWithRestAssuredTest {
   public void shouldPrintForm() {
     Consumer<String> curlConsumer = mock(Consumer.class);
 
-    // @formatter:off
+
     given()
         .baseUri(MOCK_BASE_URI)
         .port(MOCK_PORT)
@@ -351,7 +349,7 @@ public class UsingWithRestAssuredTest {
         .formParam("invitation", "I am Daniel")
         .when()
         .post("/");
-    // @formatter:on
+    
 
     verify(curlConsumer)
         .accept(
@@ -367,7 +365,7 @@ public class UsingWithRestAssuredTest {
 
     Consumer<String> curlConsumer = mock(Consumer.class);
 
-    // @formatter:off
+
     given()
         .redirects()
         .follow(false)
@@ -378,7 +376,7 @@ public class UsingWithRestAssuredTest {
         .put("/")
         .then()
         .statusCode(200);
-    // @formatter:on
+    
 
     verify(curlConsumer)
         .accept(

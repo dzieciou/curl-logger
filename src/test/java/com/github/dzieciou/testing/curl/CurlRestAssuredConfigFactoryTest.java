@@ -102,7 +102,6 @@ public class CurlRestAssuredConfigFactoryTest {
   public void shouldSentSameRequestTwice() {
     // Verifying fix for https://github.com/dzieciou/curl-logger/issues/37
 
-    // @formatter:off
     RequestSpecification request =
         RestAssured.given()
             .baseUri(MOCK_BASE_URI)
@@ -114,7 +113,6 @@ public class CurlRestAssuredConfigFactoryTest {
     request.post("/");
 
     request.post("/");
-    // @formatter:on
   }
 
   @AfterClass

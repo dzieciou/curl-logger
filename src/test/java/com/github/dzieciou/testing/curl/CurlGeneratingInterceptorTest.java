@@ -65,7 +65,6 @@ public class CurlGeneratingInterceptorTest {
         getRestAssuredConfig(new CurlGeneratingInterceptor(OPTIONS, handlers));
 
     // when
-    // @formatter:off
     given()
         .redirects()
         .follow(false)
@@ -76,7 +75,6 @@ public class CurlGeneratingInterceptorTest {
         .get("/")
         .then()
         .statusCode(200);
-    // @formatter:on
 
     // then
     assertThat(log.getLoggingEvents().size(), is(1));
@@ -97,7 +95,6 @@ public class CurlGeneratingInterceptorTest {
         getRestAssuredConfig(new CurlGeneratingInterceptor(options, handlers));
 
     // when
-    // @formatter:off
     given()
         .redirects()
         .follow(false)
@@ -108,7 +105,6 @@ public class CurlGeneratingInterceptorTest {
         .get("/shouldLogStacktraceWhenEnabled")
         .then()
         .statusCode(200);
-    // @formatter:on
 
     // then
     assertThat(log.getAllLoggingEvents().size(), is(1));
@@ -132,7 +128,6 @@ public class CurlGeneratingInterceptorTest {
         getRestAssuredConfig(new CurlGeneratingInterceptor(options, handlers));
 
     // when
-    // @formatter:off
     given()
         .redirects()
         .follow(false)
@@ -143,7 +138,6 @@ public class CurlGeneratingInterceptorTest {
         .get("/shouldLogStacktraceWhenEnabled")
         .then()
         .statusCode(200);
-    // @formatter:on
 
     // then
     assertThat(handlers.size(), is(1));
