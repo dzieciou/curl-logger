@@ -10,10 +10,7 @@ import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-/**
- * Logs each HTTP request as CURL command in "curl" log.
- */
+/** Logs each HTTP request as CURL command in "curl" log. */
 public class CurlGeneratingInterceptor implements HttpRequestInterceptor {
 
   private static final Logger log = LoggerFactory.getLogger("curl");
@@ -54,6 +51,4 @@ public class CurlGeneratingInterceptor implements HttpRequestInterceptor {
       log.warn("Failed to generate CURL command for HTTP request", e);
     }
   }
-
-
 }

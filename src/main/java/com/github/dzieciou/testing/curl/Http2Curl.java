@@ -62,10 +62,7 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-/**
- * Generates CURL command for a given HTTP request.
- */
+/** Generates CURL command for a given HTTP request. */
 @SuppressWarnings("deprecation")
 public class Http2Curl {
 
@@ -118,8 +115,7 @@ public class Http2Curl {
   }
 
   private static Optional<String> tryGetHeaderValue(List<Header> headers, String headerName) {
-    return headers
-        .stream()
+    return headers.stream()
         .filter(h -> h.getName().equals(headerName))
         .map(Header::getValue)
         .findFirst();
@@ -132,8 +128,7 @@ public class Http2Curl {
     return f.get(obj);
   }
 
-  private static Field getField(Class clazz, String fieldName)
-      throws NoSuchFieldException {
+  private static Field getField(Class clazz, String fieldName) throws NoSuchFieldException {
     try {
       return clazz.getDeclaredField(fieldName);
     } catch (NoSuchFieldException e) {
@@ -157,11 +152,11 @@ public class Http2Curl {
 
     CurlCommand curl = http2curl(request);
     options.getCurlUpdater().ifPresent(updater -> updater.accept(curl));
-    return curl
-        .asString(options.getTargetPlatform(),
-            options.useShortForm(),
-            options.printMultiliner(),
-            options.escapeNonAscii());
+    return curl.asString(
+        options.getTargetPlatform(),
+        options.useShortForm(),
+        options.printMultiliner(),
+        options.escapeNonAscii());
   }
 
   private static class Headers {
@@ -188,10 +183,11 @@ public class Http2Curl {
       try {
         HttpEntity entity = requestWithEntity.getEntity();
         if (entity != null) {
-          Optional<String> maybeRequestContentType = tryGetHeaderValue(headers.toProcess,
-              "Content-Type");
-          String contentType = maybeRequestContentType
-              .orElseThrow(() -> new IllegalStateException("Missing Content-Type header"));
+          Optional<String> maybeRequestContentType =
+              tryGetHeaderValue(headers.toProcess, "Content-Type");
+          String contentType =
+              maybeRequestContentType.orElseThrow(
+                  () -> new IllegalStateException("Missing Content-Type header"));
           handleEntity(entity, contentType, headers, curl);
         }
       } catch (IOException e) {
@@ -215,13 +211,16 @@ public class Http2Curl {
 
     headers.toProcess = handleAuthenticationHeader(headers.toProcess, curl);
 
-    List<Header> cookiesHeaders = headers.toProcess.stream()
-        .filter(h -> h.getName().equals("Cookie"))
-        .collect(Collectors.toList());
+    List<Header> cookiesHeaders =
+        headers.toProcess.stream()
+            .filter(h -> h.getName().equals("Cookie"))
+            .collect(Collectors.toList());
     if (cookiesHeaders.size() == 1) {
       curl.setCookieHeader(cookiesHeaders.get(0).getValue());
-      headers.toProcess = headers.toProcess.stream().filter(h -> !h.getName().equals("Cookie"))
-          .collect(Collectors.toList());
+      headers.toProcess =
+          headers.toProcess.stream()
+              .filter(h -> !h.getName().equals("Cookie"))
+              .collect(Collectors.toList());
     } else if (cookiesHeaders.size() > 1) {
       // RFC 6265: When the user agent generates an HTTP request, the user agent MUST NOT attach
       // more than one Cookie header field.
@@ -237,10 +236,8 @@ public class Http2Curl {
   }
 
   // The method updates headers and curl arguments
-  private void handleEntity(HttpEntity entity,
-      String contentType,
-      Headers headers,
-      CurlCommand curl) throws IOException {
+  private void handleEntity(
+      HttpEntity entity, String contentType, Headers headers, CurlCommand curl) throws IOException {
 
     List<String> parameters = Arrays.asList(contentType.split(";"));
     parameters = parameters.stream().map(String::trim).collect(Collectors.toList());
@@ -263,12 +260,10 @@ public class Http2Curl {
         String data = EntityUtils.toString(entity);
         curl.addDataBinary(data);
     }
-
   }
 
   private List<Header> filterOutHeader(List<Header> headers, String name) {
-    return headers.stream().filter(h -> !h.getName().equals(name))
-        .collect(Collectors.toList());
+    return headers.stream().filter(h -> !h.getName().equals(name)).collect(Collectors.toList());
   }
 
   private String inferUri(HttpRequest request) {
@@ -280,7 +275,8 @@ public class Http2Curl {
         inferredScheme = "https";
       } else if ((request instanceof RequestWrapper) || (request instanceof HttpRequestWrapper)) {
         if (getOriginalRequestUri(request).startsWith("https")) {
-          // This is for original URL, so if during redirects we go out of HTTPs, this might be a wrong guess
+          // This is for original URL, so if during redirects we go out of HTTPs, this might be a
+          // wrong guess
           inferredScheme = "https";
         }
       }
@@ -300,30 +296,32 @@ public class Http2Curl {
     try {
       HttpEntity wrappedEntity = (HttpEntity) getFieldValue(entity, "wrappedEntity");
       RestAssuredMultiPartEntity multiPartEntity = (RestAssuredMultiPartEntity) wrappedEntity;
-      MultipartEntityBuilder multipartEntityBuilder = (MultipartEntityBuilder) getFieldValue(
-          multiPartEntity, "builder");
+      MultipartEntityBuilder multipartEntityBuilder =
+          (MultipartEntityBuilder) getFieldValue(multiPartEntity, "builder");
 
       @SuppressWarnings("unchecked")
-      List<FormBodyPart> bodyParts = (List<FormBodyPart>) getFieldValue(multipartEntityBuilder,
-          "bodyParts");
+      List<FormBodyPart> bodyParts =
+          (List<FormBodyPart>) getFieldValue(multipartEntityBuilder, "bodyParts");
 
       bodyParts.forEach(p -> handlePart(p, curl));
     } catch (NoSuchFieldException | IllegalAccessException e) {
       throw new RuntimeException(e);
     }
-
   }
 
   private void handlePart(FormBodyPart bodyPart, CurlCommand curl) {
-    String contentDisposition = bodyPart.getHeader().getFields().stream()
-        .filter(f -> f.getName().equals("Content-Disposition"))
-        .findFirst()
-        .orElseThrow(() -> new RuntimeException("Multipart missing Content-Disposition header"))
-        .getBody();
+    String contentDisposition =
+        bodyPart.getHeader().getFields().stream()
+            .filter(f -> f.getName().equals("Content-Disposition"))
+            .findFirst()
+            .orElseThrow(() -> new RuntimeException("Multipart missing Content-Disposition header"))
+            .getBody();
 
     List<String> elements = Arrays.asList(contentDisposition.split(";"));
-    Map<String, String> map = elements.stream().map(s -> s.trim().split("="))
-        .collect(Collectors.toMap(a -> a[0], a -> a.length == 2 ? a[1] : ""));
+    Map<String, String> map =
+        elements.stream()
+            .map(s -> s.trim().split("="))
+            .collect(Collectors.toMap(a -> a[0], a -> a.length == 2 ? a[1] : ""));
 
     if (map.containsKey("form-data")) {
 
@@ -349,8 +347,7 @@ public class Http2Curl {
   }
 
   private void handleNotIgnoredHeaders(Headers headers, CurlCommand curl) {
-    headers.toProcess
-        .stream()
+    headers.toProcess.stream()
         .filter(h -> !headers.ignored.contains(h.getName()))
         .forEach(h -> curl.addHeader(h.getName(), h.getValue()));
   }
@@ -376,6 +373,4 @@ public class Http2Curl {
     }
     return remainingHeaders;
   }
-
-
 }

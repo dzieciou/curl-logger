@@ -9,24 +9,24 @@ public class CurlLogger implements CurlHandler {
 
   @Override
   public void handle(String message, Options options) {
-      switch (options.logLevel()) {
-        case DEBUG:
-          log.debug(message);
-          break;
-        case ERROR:
-          log.error(message);
-          break;
-        case INFO:
-          log.info(message);
-          break;
-        case TRACE:
-          log.trace(message);
-          break;
-        case WARN:
-          log.warn(message);
-          break;
-        default:
-          throw new IllegalArgumentException("Unknown log level: " + options.logLevel());
+    switch (options.logLevel()) {
+      case DEBUG:
+        log.debug(message);
+        break;
+      case ERROR:
+        log.error(message);
+        break;
+      case INFO:
+        log.info(message);
+        break;
+      case TRACE:
+        log.trace(message);
+        break;
+      case WARN:
+        log.warn(message);
+        break;
+      default:
+        throw new IllegalArgumentException("Unknown log level: " + options.logLevel());
     }
   }
 }

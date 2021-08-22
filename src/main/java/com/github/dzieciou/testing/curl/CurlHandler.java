@@ -9,5 +9,4 @@ public interface CurlHandler {
    * @param options options used to generate curl.
    */
   void handle(String curl, Options options);
-
 }

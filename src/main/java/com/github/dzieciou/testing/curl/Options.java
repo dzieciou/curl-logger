@@ -15,8 +15,7 @@ public class Options {
   private boolean escapeNonAscii;
   private boolean alwaysPrintMethod;
 
-  private Options() {
-  }
+  private Options() {}
 
   public static Builder builder() {
     return new Builder();
@@ -50,55 +49,45 @@ public class Options {
     return targetPlatform;
   }
 
-  public boolean alwaysPrintMethod() { return alwaysPrintMethod; }
+  public boolean alwaysPrintMethod() {
+    return alwaysPrintMethod;
+  }
 
   public static class Builder {
 
     private final Options options = new Options();
 
-    /**
-     * Configures the library to print a stacktrace where curl command has been generated.
-     */
+    /** Configures the library to print a stacktrace where curl command has been generated. */
     public Builder logStacktrace() {
       options.logStacktrace = true;
       return this;
     }
 
-    /**
-     * Configures the library to not print a stacktrace where curl command has been generated.
-     */
+    /** Configures the library to not print a stacktrace where curl command has been generated. */
     public Builder dontLogStacktrace() {
       options.logStacktrace = false;
       return this;
     }
 
-    /**
-     * Configures the library to print a curl command in multiple lines.
-     */
+    /** Configures the library to print a curl command in multiple lines. */
     public Builder printMultiliner() {
       options.printMultiliner = true;
       return this;
     }
 
-    /**
-     * Configures the library to print a curl command in a single line.
-     */
+    /** Configures the library to print a curl command in a single line. */
     public Builder printSingleliner() {
       options.printMultiliner = false;
       return this;
     }
 
-    /**
-     * Configures the library to print short form of curl parameters.
-     */
+    /** Configures the library to print short form of curl parameters. */
     public Builder useShortForm() {
       options.useShortForm = true;
       return this;
     }
 
-    /**
-     * Configures the library to print long form of curl parameters.
-     */
+    /** Configures the library to print long form of curl parameters. */
     public Builder useLongForm() {
       options.useShortForm = false;
       return this;
@@ -122,33 +111,25 @@ public class Options {
       return this;
     }
 
-    /**
-     * Enable escaping non ASCII characters for POSIX platforms.
-     */
+    /** Enable escaping non ASCII characters for POSIX platforms. */
     public Builder escapeNonAscii() {
       options.escapeNonAscii = true;
       return this;
     }
 
-    /**
-     * Disable escaping non ASCII characters for POSIX platforms.
-     */
+    /** Disable escaping non ASCII characters for POSIX platforms. */
     public Builder dontEscapeNonAscii() {
       options.escapeNonAscii = false;
       return this;
     }
 
-    /**
-     * Changes logging to a custom level.
-     */
+    /** Changes logging to a custom level. */
     public Builder useLogLevel(Level level) {
       options.logLevel = level;
       return this;
     }
 
-    /**
-     * Always print HTTP method, including GET method.
-     */
+    /** Always print HTTP method, including GET method. */
     public Builder alwaysPrintMethod() {
       options.alwaysPrintMethod = true;
       return this;
@@ -157,6 +138,5 @@ public class Options {
     public Options build() {
       return options;
     }
-
   }
 }
