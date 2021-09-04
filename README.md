@@ -343,6 +343,10 @@ given()
 
 ## Releases
 
+2.2.0-SNAPSHOT:
+* Upgrade runtime dependencies: REST-assured from 4.3.12 to 4.4.0, httpclient from 4.5.3 to 4.5.13, Guava from 28.0-jre to 29.0-jre
+* Upgrade development dependencies (to TestNG 7.4.0, mockito from 2.0.2-beta to 3.12.1)
+
 2.1.0:
 * Support for `alwaysPrintMethod` option that enables always printing HTTP method of a request (many thanks to Luigi 
   Cardito for his pull request)
