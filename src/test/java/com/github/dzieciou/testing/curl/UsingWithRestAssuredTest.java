@@ -222,7 +222,7 @@ public class UsingWithRestAssuredTest {
         .accept(
             "curl 'http://localhost:"
                 + MOCK_PORT
-                + "/' -H 'Accept: */*' -H 'Content-Type: application/json; charset=UTF-8'"
+                + "/' -H 'Accept: */*' -H 'Content-Type: application/json'"
                 + " --data-binary 'name=Administração' --compressed -k -v");
   }
 
@@ -244,7 +244,7 @@ public class UsingWithRestAssuredTest {
         .accept(
             "curl 'http://localhost:"
                 + MOCK_PORT
-                + "/' -H 'Accept: */*' -H 'Content-Type: application/json; charset=UTF-8'"
+                + "/' -H 'Accept: */*' -H 'Content-Type: application/json'"
                 + " --data-binary $'{\\n"
                 + "\\'name\\':\"CKB2\",\\'salary\\':\\'123\\',\\'age\\':\\'23\\'\\n"
                 + "}' --compressed -k -v");
