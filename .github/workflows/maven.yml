@@ -12,10 +12,13 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        java-version: [ 11, 17-ea ]
+        os: [ubuntu-18.04]
+        java-version: [ 8, 9, 10, 11, 12, 13, 14, 15, 16, 17-ea ]
+      max-parallel: 4
+    name: Test JDK ${{ matrix.java-version }}, ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK ${{ matrix.java-version }}
