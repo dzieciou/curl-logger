@@ -9,16 +9,12 @@ assignees: ''
 
 # Configuration
 
-- [ ] system on which you generate the curl command (Windows/Linux/etc.)
-- [ ] system on which you debug the generated curl command
-- [ ] curl-logger library version you use
+1. Source system on which you generate the curl command (Windows/Linux/etc.)
+2. Target system on which you debug the generated curl command
+3. curl-logger library version you use
 
-# Describe the problem
+# Problem
 
-- [ ] Step
-- [ ] Actual result
-- [ ] Expected result
-
-# MWE
-
-Please provide a minimal working example to reproduce the problem.
+1. Steps to reproduce the issue, preferabbly with [minimal, reproducible example](https://stackoverflow.com/help/minimal-reproducible-example).
+2. Actual result
+3. Expected result
