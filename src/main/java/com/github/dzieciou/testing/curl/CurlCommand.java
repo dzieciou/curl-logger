@@ -74,7 +74,6 @@ public class CurlCommand {
     return this;
   }
 
-
   public CurlCommand addFormPart(String name, String content) {
     formParts.add(new FormPart(name, content));
     return this;

@@ -115,17 +115,19 @@ public class Http2CurlTest {
     headRequest.addHeader("Cookie", "X=Y; A=B");
     headRequest.addHeader("Authorization", "xyz");
     Options options =
-            Options.builder()
-                    .targetPlatform(Platform.UNIX)
-                    .useShortForm()
-                    .printSingleliner()
-                    .alwaysPrintMethod()
-                    .updateCurl(curl -> curl.removeHeader("Cookie"))
-                    .build();
+        Options.builder()
+            .targetPlatform(Platform.UNIX)
+            .useShortForm()
+            .printSingleliner()
+            .alwaysPrintMethod()
+            .updateCurl(curl -> curl.removeHeader("Cookie"))
+            .build();
 
     assertThat(
-            new Http2Curl(options).generateCurl(headRequest),
-            equalTo("curl 'http://test.com/items/12345' -X HEAD -H 'Authorization: xyz' --compressed -k -v"));
+        new Http2Curl(options).generateCurl(headRequest),
+        equalTo(
+            "curl 'http://test.com/items/12345' -X HEAD -H 'Authorization: xyz' --compressed -k"
+                + " -v"));
   }
 
   @Test
