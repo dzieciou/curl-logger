@@ -68,8 +68,12 @@ public class CurlCommand {
 
   public CurlCommand removeHeader(String name) {
     headers.removeIf(header -> header.name.equals(name));
+    if (cookieHeader.isPresent()) {
+      cookieHeader = Optional.empty();
+    }
     return this;
   }
+
 
   public CurlCommand addFormPart(String name, String content) {
     formParts.add(new FormPart(name, content));
