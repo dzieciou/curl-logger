@@ -68,6 +68,9 @@ public class CurlCommand {
 
   public CurlCommand removeHeader(String name) {
     headers.removeIf(header -> header.name.equals(name));
+    if ("Cookie".equals(name)) {
+      cookieHeader = Optional.empty();
+    }
     return this;
   }
 

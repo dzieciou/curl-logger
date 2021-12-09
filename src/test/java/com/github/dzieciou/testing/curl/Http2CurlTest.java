@@ -110,6 +110,27 @@ public class Http2CurlTest {
   }
 
   @Test
+  public void shouldRemoveOnlyCookieHeader() throws Exception {
+    HttpHead headRequest = new HttpHead("http://test.com/items/12345");
+    headRequest.addHeader("Cookie", "X=Y; A=B");
+    headRequest.addHeader("Authorization", "xyz");
+    Options options =
+        Options.builder()
+            .targetPlatform(Platform.UNIX)
+            .useShortForm()
+            .printSingleliner()
+            .alwaysPrintMethod()
+            .updateCurl(curl -> curl.removeHeader("Cookie"))
+            .build();
+
+    assertThat(
+        new Http2Curl(options).generateCurl(headRequest),
+        equalTo(
+            "curl 'http://test.com/items/12345' -X HEAD -H 'Authorization: xyz' --compressed -k"
+                + " -v"));
+  }
+
+  @Test
   public void shouldPrintMultipleCookieHeadersInMultipleParameters() throws Exception {
     HttpHead headRequest = new HttpHead("http://test.com/items/12345");
     headRequest.addHeader("Cookie", "X=Y; A=B");
