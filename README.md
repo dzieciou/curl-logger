@@ -346,7 +346,7 @@ given()
 2.2.0-SNAPSHOT:
 * Upgrade runtime dependencies: REST-assured from 4.3.12 to 4.4.0, httpclient from 4.5.3 to 4.5.13, Guava from 28.0-jre to 29.0-jre
 * Upgrade development dependencies (to TestNG 7.4.0, mockito from 2.0.2-beta to 3.12.1)
-* Fixed bug #74: `Options.builder().updateCurl(curl -> curl.removeHeader("Cookie").build();` now correctly removes also Cookie header
+* Fixed bug [#74](https://github.com/dzieciou/curl-logger/issues/56): `Options.builder().updateCurl(curl -> curl.removeHeader("Cookie").build();` now correctly removes also Cookie header (thanks to @iamrulloh for reporting the problem)
 
 2.1.0:
 * Support for `alwaysPrintMethod` option that enables always printing HTTP method of a request (many thanks to Luigi 
