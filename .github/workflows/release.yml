@@ -23,7 +23,7 @@ jobs:
       - name: Publish package
         run: |
           mvn \
-            -Prelease
+            -Prelease \
             --no-transfer-progress \
             --batch-mode \
             -Dgpg.passphrase=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }} \
