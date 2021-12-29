@@ -108,7 +108,7 @@ By default `CurlRestAssuredConfigFactory#createConfig` creates configuration tha
 
 There is a way to define at which log level the log statement should be created:
 ```java  
-Options.builder().logLevel(Level.INFO).build();
+Options.builder().useLogLevel(Level.INFO).build();
 ```
 
 By default the curl commands are generated at `DEBUG` level, but depending on the context it might 
