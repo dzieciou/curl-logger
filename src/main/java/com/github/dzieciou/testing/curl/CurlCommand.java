@@ -324,8 +324,7 @@ public class CurlCommand {
     public String serialize(CurlCommand curl) {
       List<List<String>> command = new ArrayList<>();
 
-      command.add(
-          line(useShortForm, "curl", quoteString(curl.url).replaceAll("[{}\\\\]", "\\$&")));
+      command.add(line(useShortForm, "curl", quoteString(curl.url).replaceAll("[{}\\\\]", "\\$&")));
 
       curl.method.ifPresent(method -> command.add(line(useShortForm, "--request", method)));
 

@@ -1,13 +1,12 @@
 package com.github.dzieciou.testing.curl;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /** Logs each HTTP request as CURL command in "curl" log. */
 public class CurlGeneratingInterceptor implements HttpRequestInterceptor {
