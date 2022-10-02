@@ -261,7 +261,8 @@ public class CurlCommand {
 
     private String escapeStringPosix(String s) {
 
-      String escaped = IntStream.range(0, s.length())
+      String escaped =
+          IntStream.range(0, s.length())
               .mapToObj(index -> escapePosix(s.charAt(index), index))
               .collect(Collectors.joining());
 
@@ -287,7 +288,8 @@ public class CurlCommand {
           case '\r':
             return "\\r";
             // '@' character has a special meaning in --data-binary (loading a file)
-            // If you start the data with the letter @, the rest should be a filename. But we don't mean filename
+            // If you start the data with the letter @, the rest should be a filename. But we don't
+            // mean filename
             // here, so we need to escape it
           case '@':
             if (index == 0) {
