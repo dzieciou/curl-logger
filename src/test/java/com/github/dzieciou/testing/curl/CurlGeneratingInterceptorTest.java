@@ -23,11 +23,11 @@ import java.util.List;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockserver.client.MockServerClient;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
 import uk.org.lidalia.slf4jext.Level;
 
 public class CurlGeneratingInterceptorTest {
@@ -35,8 +35,8 @@ public class CurlGeneratingInterceptorTest {
   private static final int MOCK_PORT = 9999;
   private static final String MOCK_HOST = "localhost";
   private static final String MOCK_BASE_URI = "http://" + MOCK_HOST;
-  private MockServerClient mockServer;
-  private TestLogger log;
+  private static MockServerClient mockServer;
+  private static TestLogger log;
 
   private static RestAssuredConfig getRestAssuredConfig(
       CurlGeneratingInterceptor curlGeneratingInterceptor) {
@@ -47,17 +47,17 @@ public class CurlGeneratingInterceptorTest {
                 .httpClientFactory(new MyHttpClientFactory(curlGeneratingInterceptor)));
   }
 
-  @BeforeClass
-  public void setupMock() {
+  @BeforeAll
+  public static void setupMock() {
     mockServer = startClientAndServer(MOCK_PORT);
     mockServer.when(request()).respond(response());
+    log = TestLoggerFactory.getTestLogger("curl");
   }
 
   @Test
   public void shouldLogDebugMessageWithCurlCommand() {
 
     // given
-    log = TestLoggerFactory.getTestLogger("curl");
     log.clearAll();
     Options OPTIONS = Options.builder().dontLogStacktrace().build();
     List<CurlHandler> handlers = Collections.singletonList(new CurlLogger());
@@ -87,7 +87,6 @@ public class CurlGeneratingInterceptorTest {
   public void shouldLogStacktraceWhenEnabled() {
 
     // given
-    log = TestLoggerFactory.getTestLogger("curl");
     log.clearAll();
     Options options = Options.builder().logStacktrace().build();
     List<CurlHandler> handlers = Collections.singletonList(new CurlLogger());
@@ -144,14 +143,14 @@ public class CurlGeneratingInterceptorTest {
     assertThat(curls.get(0), is(startsWith("curl")));
   }
 
-  @AfterMethod
+  @AfterEach
   public void clearLoggers() {
     log.clearAll();
     TestLoggerFactory.clear();
   }
 
-  @AfterClass
-  public void stopMockServer() {
+  @AfterAll
+  public static void stopMockServer() {
     mockServer.stop();
   }
 
