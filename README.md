@@ -337,7 +337,7 @@ given()
 <dependency>
     <groupId>io.restassured</groupId>
     <artifactId>rest-assured</artifactId>
-    <version>4.4.0</version>
+    <version>5.2.0</version>
 </dependency>
 ```
 
