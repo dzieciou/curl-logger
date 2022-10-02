@@ -78,17 +78,15 @@ public class CurlCommandTest {
         curl.asString(Platform.WINDOWS, true, false, true),
         equalTo("curl \"/requestPath\" --data-binary \"maciek@gmail.com\""));
 
-
     curl = new CurlCommand().setUrl("/requestPath").addDataBinary("@maciek.gmail.com");
 
     assertThat(
-            curl.asString(Platform.UNIX, true, false, true),
-            equalTo("curl '/requestPath' --data-binary $'\\x40maciek.gmail.com'"));
+        curl.asString(Platform.UNIX, true, false, true),
+        equalTo("curl '/requestPath' --data-binary $'\\x40maciek.gmail.com'"));
 
     assertThat(
-            curl.asString(Platform.WINDOWS, true, false, true),
-            equalTo("curl \"/requestPath\" --data-binary \"@maciek.gmail.com\""));
-
+        curl.asString(Platform.WINDOWS, true, false, true),
+        equalTo("curl \"/requestPath\" --data-binary \"@maciek.gmail.com\""));
   }
 
   @Test
