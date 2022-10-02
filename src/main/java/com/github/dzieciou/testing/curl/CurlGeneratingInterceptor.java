@@ -1,9 +1,7 @@
 package com.github.dzieciou.testing.curl;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.protocol.HttpContext;
@@ -25,7 +23,7 @@ public class CurlGeneratingInterceptor implements HttpRequestInterceptor {
       throw new IllegalArgumentException("Missing handlers, at least one should be given");
     }
     this.options = options;
-    this.handlers = new ArrayList(handlers);
+    this.handlers = new ArrayList<>(handlers);
     http2Curl = new Http2Curl(options);
   }
 
@@ -37,7 +35,7 @@ public class CurlGeneratingInterceptor implements HttpRequestInterceptor {
   }
 
   @Override
-  public void process(HttpRequest request, HttpContext context) throws HttpException, IOException {
+  public void process(HttpRequest request, HttpContext context) {
     try {
       String curl = http2Curl.generateCurl(request);
       StringBuffer message = new StringBuffer(curl);
