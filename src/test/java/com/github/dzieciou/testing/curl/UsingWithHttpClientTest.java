@@ -12,11 +12,13 @@ import java.util.stream.Collectors;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 public class UsingWithHttpClientTest {
 
-  @Test(groups = "end-to-end-samples")
+  @Test
+  @Tag("end-to-end-samples")
   public void testHttp() throws IOException {
     TestLoggerFactory.clearAll();
     HttpGet getRequest = new HttpGet("http://google.com");
@@ -26,7 +28,8 @@ public class UsingWithHttpClientTest {
         hasItem("curl 'http://google.com/' --compressed --insecure --verbose"));
   }
 
-  @Test(groups = "end-to-end-samples")
+  @Test
+  @Tag("end-to-end-samples")
   public void testHttps() throws IOException {
     TestLoggerFactory.clearAll();
     HttpGet getRequest = new HttpGet("https://google.com");

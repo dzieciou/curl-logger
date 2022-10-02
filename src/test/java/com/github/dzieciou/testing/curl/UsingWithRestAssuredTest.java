@@ -22,16 +22,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import org.apache.commons.io.FileUtils;
-import org.apache.http.*;
+import org.apache.http.HttpException;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.mockserver.client.MockServerClient;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
 
 public class UsingWithRestAssuredTest {
 
@@ -39,8 +42,8 @@ public class UsingWithRestAssuredTest {
   private static final String MOCK_HOST = "localhost";
   private static final String MOCK_BASE_URI = "http://" + MOCK_HOST;
 
-  private MockServerClient mockServer;
-  private TemporaryFolder tempFolder;
+  private static MockServerClient mockServer;
+  private static TemporaryFolder tempFolder;
 
   private RestAssuredConfig getRestAssuredConfig(Consumer<String> curlConsumer) {
     return config()
@@ -50,14 +53,15 @@ public class UsingWithRestAssuredTest {
                 .httpClientFactory(new MyHttpClientFactory(curlConsumer)));
   }
 
-  @BeforeClass
-  public void setupMock() throws IOException {
+  @BeforeAll
+  public static void setupMock() throws IOException {
     tempFolder = new TemporaryFolder();
     mockServer = startClientAndServer(MOCK_PORT);
     mockServer.when(request()).respond(response());
   }
 
-  @Test(groups = "end-to-end-samples")
+  @Test
+  @Tag("end-to-end-samples")
   public void cookiesTest() {
 
     Consumer<String> curlConsumer = mock(Consumer.class);
@@ -88,7 +92,8 @@ public class UsingWithRestAssuredTest {
                 + " --compressed -k -v");
   }
 
-  @Test(groups = "end-to-end-samples")
+  @Test
+  @Tag("end-to-end-samples")
   public void cookieWithSpecialCharactersTest() {
 
     Consumer<String> curlConsumer = mock(Consumer.class);
@@ -125,7 +130,8 @@ public class UsingWithRestAssuredTest {
                 + " -H 'Accept: */*' --compressed -k -v");
   }
 
-  @Test(groups = "end-to-end-samples")
+  @Test
+  @Tag("end-to-end-samples")
   public void customizedCookie() {
 
     Consumer<String> curlConsumer = mock(Consumer.class);
@@ -161,7 +167,8 @@ public class UsingWithRestAssuredTest {
                 + "/access' -b 'token=tokenValue' -H 'Accept: */*' --compressed -k -v");
   }
 
-  @Test(groups = "end-to-end-samples")
+  @Test
+  @Tag("end-to-end-samples")
   public void basicIntegrationTest() {
 
     Consumer<String> curlConsumer = mock(Consumer.class);
@@ -181,7 +188,8 @@ public class UsingWithRestAssuredTest {
         .accept("curl 'http://localhost:" + MOCK_PORT + "/' -H 'Accept: */*' --compressed -k -v");
   }
 
-  @Test(groups = "end-to-end-samples")
+  @Test
+  @Tag("end-to-end-samples")
   public void shouldPrintPostRequestWithMultipartDataProperly() {
 
     Consumer<String> curlConsumer = mock(Consumer.class);
@@ -204,7 +212,8 @@ public class UsingWithRestAssuredTest {
                 + " -k -v");
   }
 
-  @Test(groups = "end-to-end-samples")
+  @Test
+  @Tag("end-to-end-samples")
   public void shouldPrintBody() {
 
     Consumer<String> curlConsumer = mock(Consumer.class);
@@ -226,7 +235,8 @@ public class UsingWithRestAssuredTest {
                 + " --data-binary 'name=Administração' --compressed -k -v");
   }
 
-  @Test(groups = "end-to-end-samples")
+  @Test
+  @Tag("end-to-end-samples")
   public void shouldPrintBodyWithEncoding() {
 
     Consumer<String> curlConsumer = mock(Consumer.class);
@@ -250,7 +260,8 @@ public class UsingWithRestAssuredTest {
                 + "}' --compressed -k -v");
   }
 
-  @Test(groups = "end-to-end-samples")
+  @Test
+  @Tag("end-to-end-samples")
   public void shouldPrintMultipartWithContentTypesForTypes() {
 
     Consumer<String> curlConsumer = mock(Consumer.class);
@@ -340,7 +351,8 @@ public class UsingWithRestAssuredTest {
                 + " --compressed -k -v");
   }
 
-  @Test(groups = "end-to-end-samples")
+  @Test
+  @Tag("end-to-end-samples")
   public void shouldPrintPut() {
 
     Consumer<String> curlConsumer = mock(Consumer.class);
@@ -363,8 +375,8 @@ public class UsingWithRestAssuredTest {
                 + "/' -X PUT -H 'Accept: */*' -H 'Content-Length: 0' --compressed -k -v");
   }
 
-  @AfterClass
-  public void closeMock() {
+  @AfterAll
+  public static void closeMock() {
     mockServer.stop();
     tempFolder.deleteAll();
   }

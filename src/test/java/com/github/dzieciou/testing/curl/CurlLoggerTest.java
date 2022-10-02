@@ -7,8 +7,8 @@ import static org.hamcrest.Matchers.startsWith;
 import com.github.valfirst.slf4jtest.LoggingEvent;
 import com.github.valfirst.slf4jtest.TestLogger;
 import com.github.valfirst.slf4jtest.TestLoggerFactory;
+import org.junit.jupiter.api.Test;
 import org.slf4j.event.Level;
-import org.testng.annotations.Test;
 
 public class CurlLoggerTest {
 

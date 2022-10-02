@@ -21,20 +21,20 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.HttpContext;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockserver.client.MockServerClient;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
 
 public class CurlRestAssuredConfigFactoryTest {
 
   private static final int MOCK_PORT = 9999;
   private static final String MOCK_HOST = "localhost";
   private static final String MOCK_BASE_URI = "http://" + MOCK_HOST;
-  private MockServerClient mockServer;
+  private static MockServerClient mockServer;
 
-  @BeforeClass
-  public void setupMock() {
+  @BeforeAll
+  public static void setupMock() {
     mockServer = startClientAndServer(MOCK_PORT);
     mockServer.when(request()).respond(response().withStatusCode(200));
   }
@@ -115,8 +115,8 @@ public class CurlRestAssuredConfigFactoryTest {
     request.post("/");
   }
 
-  @AfterClass
-  public void closeMock() {
+  @AfterAll
+  public static void closeMock() {
     mockServer.stop();
   }
 

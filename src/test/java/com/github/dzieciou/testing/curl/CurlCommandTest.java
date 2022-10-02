@@ -1,11 +1,9 @@
 package com.github.dzieciou.testing.curl;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 public class CurlCommandTest {
 
