@@ -66,17 +66,29 @@ public class CurlCommandTest {
   }
 
   @Test
-  public void shouldEscapeAtCharacterOnUnixOnly() {
+  public void shouldEscapeAtOnlyWhenFirstCharacterOnWindows() {
 
     CurlCommand curl = new CurlCommand().setUrl("/requestPath").addDataBinary("maciek@gmail.com");
 
     assertThat(
         curl.asString(Platform.UNIX, true, false, true),
-        equalTo("curl '/requestPath' --data-binary $'maciek\\x40gmail.com'"));
+        equalTo("curl '/requestPath' --data-binary 'maciek@gmail.com'"));
 
     assertThat(
         curl.asString(Platform.WINDOWS, true, false, true),
         equalTo("curl \"/requestPath\" --data-binary \"maciek@gmail.com\""));
+
+
+    curl = new CurlCommand().setUrl("/requestPath").addDataBinary("@maciek.gmail.com");
+
+    assertThat(
+            curl.asString(Platform.UNIX, true, false, true),
+            equalTo("curl '/requestPath' --data-binary $'\\x40maciek.gmail.com'"));
+
+    assertThat(
+            curl.asString(Platform.WINDOWS, true, false, true),
+            equalTo("curl \"/requestPath\" --data-binary \"@maciek.gmail.com\""));
+
   }
 
   @Test
@@ -97,7 +109,7 @@ public class CurlCommandTest {
         curl.asString(Platform.UNIX, true, false, true),
         equalTo(
             "curl 'http://testapi.com/post' --data-binary $'{\\r\\n   \\'name\\':"
-                + "\\'Administra\\xe7\\xe3o\\',\\r\\n   \\'email\\':\\'admin\\x40gmail.com\\',"
+                + "\\'Administra\\xe7\\xe3o\\',\\r\\n   \\'email\\':\\'admin@gmail.com\\',"
                 + "\\r\\n   \\'password\\':\\'abc%\"\\'\\r\\n}'"));
 
     assertThat(

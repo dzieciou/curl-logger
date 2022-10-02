@@ -16,7 +16,7 @@ given()
   .statusCode(302); 
 ```
 will be logged as:
-```ba
+```bash
 curl 'http://google.com/' -H 'Accept: */*' -H 'Content-Length: 0'  -H 'Connection: Keep-Alive' 
   -H 'User-Agent: Apache-HttpClient/4.5.2 (Java/1.8.0_112)' -H 'Content-Type: multipart/mixed' 
   --compressed -k -v
@@ -123,7 +123,7 @@ For instance, curl command generated for Unix platform
 
 ```bash
 curl 'http://testapi.com/post' --data-binary $'{\r\n   \'name\':\'Administra\xe7\xe3o\',\r\n   
-  \'email\':\'admin\x40gmail.com\',\r\n   \'password\':\'abc%"\'\r\n}'
+  \'email\':\'admin@gmail.com\',\r\n   \'password\':\'abc%"\'\r\n}'
 ```
 
 will look different when generated for Windows platform:
