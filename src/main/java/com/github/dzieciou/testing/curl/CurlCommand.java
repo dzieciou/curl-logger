@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Represents curl command and provides a way to serialize it through {@link #asString(Platform,
@@ -260,7 +261,10 @@ public class CurlCommand {
 
     private String escapeStringPosix(String s) {
 
-      String escaped = s.chars().mapToObj(c -> escape((char) c)).collect(Collectors.joining());
+      String escaped =
+          IntStream.range(0, s.length())
+              .mapToObj(index -> escapePosix(s.charAt(index), index))
+              .collect(Collectors.joining());
 
       if (!escaped.equals(s)) {
         // ANSI-C Quoting performed
@@ -270,7 +274,7 @@ public class CurlCommand {
       }
     }
 
-    private String escape(char c) {
+    private String escapePosix(char c, int index) {
       if (isAscii(c)) {
         // Perform ANSI-C Quoting for ASCII characters
         // https://www.gnu.org/software/bash/manual/html_node/ANSI_002dC-Quoting.html
@@ -284,9 +288,13 @@ public class CurlCommand {
           case '\r':
             return "\\r";
             // '@' character has a special meaning in --data-binary (loading a file)
-            // So we need to escape it
+            // If you start the data with the letter @, the rest should be a filename. But we don't
+            // mean filename
+            // here, so we need to escape it
           case '@':
-            return escapeAsHex(c);
+            if (index == 0) {
+              return escapeAsHex(c);
+            }
           default:
             return isAsciiPrintable(c) ? String.valueOf(c) : escapeAsHex(c);
         }
@@ -308,9 +316,9 @@ public class CurlCommand {
     private static String escapeAsHex(char c) {
       int code = c;
       if (code < 256) {
-        return String.format("\\x%02x", (int) c);
+        return String.format("\\x%02x", code);
       }
-      return String.format("\\u%04x", (int) c);
+      return String.format("\\u%04x", code);
     }
 
     public String serialize(CurlCommand curl) {
@@ -360,7 +368,7 @@ public class CurlCommand {
       }
 
       return command.stream()
-          .map(line -> line.stream().collect(Collectors.joining(" ")))
+          .map(line -> String.join(" ", line))
           .collect(Collectors.joining(chooseJoiningString(printMultiliner)));
     }
 
