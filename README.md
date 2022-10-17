@@ -343,6 +343,10 @@ given()
 
 ## Releases
 
+2.1.2:
+* Upgrade runtime dependencies: REST-assured from 4.4.0 to 5.2.0
+* Escape "at" character (@) only when it is first character in request (#80)
+
 2.1.1:
 * Upgrade runtime dependencies: REST-assured from 4.3.12 to 4.4.0, httpclient from 4.5.3 to 4.5.13, Guava from 28.0-jre to 29.0-jre
 * Upgrade development dependencies (to TestNG 7.4.0, mockito from 2.0.2-beta to 3.12.1)
