@@ -47,8 +47,7 @@ public class UsingWithRestAssuredTest {
   private static MockServerClient mockServer;
   private static TemporaryFolder tempFolder;
 
-  @Mock
-  public Consumer<String> curlConsumer;
+  @Mock public Consumer<String> curlConsumer;
 
   private RestAssuredConfig getRestAssuredConfig(Consumer<String> curlConsumer) {
     return config()

@@ -136,14 +136,12 @@ public class CurlRestAssuredConfigFactoryTest {
     }
 
     @Override
-    public void describeTo(Description description) {
-    }
+    public void describeTo(Description description) {}
   }
 
   private static class MyRequestInerceptor implements HttpRequestInterceptor {
 
     @Override
-    public void process(HttpRequest httpRequest, HttpContext httpContext) {
-    }
+    public void process(HttpRequest httpRequest, HttpContext httpContext) {}
   }
 }
