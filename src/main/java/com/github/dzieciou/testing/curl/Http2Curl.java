@@ -162,7 +162,7 @@ public class Http2Curl {
   private static class Headers {
 
     List<Header> toProcess;
-    Set<String> ignored;
+    final Set<String> ignored;
 
     public Headers(List<Header> toProcess) {
       this.toProcess = toProcess;
