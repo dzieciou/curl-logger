@@ -13,7 +13,6 @@ import io.restassured.config.RestAssuredConfig;
 import io.restassured.specification.RequestSpecification;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.HttpContext;
@@ -53,13 +52,10 @@ public class CurlRestAssuredConfigFactoryTest {
         HttpClientConfig.httpClientConfig()
             .setParam("TestParam", "TestValue")
             .httpClientFactory(
-                new HttpClientConfig.HttpClientFactory() {
-                  @Override
-                  public HttpClient createHttpClient() {
-                    DefaultHttpClient client = new DefaultHttpClient();
-                    client.addRequestInterceptor(new MyRequestInerceptor());
-                    return client;
-                  }
+                () -> {
+                  DefaultHttpClient client = new DefaultHttpClient();
+                  client.addRequestInterceptor(new MyRequestInerceptor());
+                  return client;
                 });
     final RestAssuredConfig config = RestAssuredConfig.config().httpClient(httpClientConfig);
 
