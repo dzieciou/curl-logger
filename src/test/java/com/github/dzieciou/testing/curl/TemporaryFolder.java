@@ -20,6 +20,7 @@ public class TemporaryFolder {
   public void deleteAll() {
     try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(this.dir)) {
       for (Path fpath : directoryStream) {
+        //noinspection ResultOfMethodCallIgnored
         fpath.toFile().delete();
       }
     } catch (IOException ignored) {
