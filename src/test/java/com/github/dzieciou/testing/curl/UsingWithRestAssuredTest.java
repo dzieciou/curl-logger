@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import org.apache.commons.io.FileUtils;
-import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.client.HttpClient;
@@ -409,9 +408,7 @@ public class UsingWithRestAssuredTest {
     }
 
     @Override
-    public void process(HttpRequest request, HttpContext context)
-        throws HttpException, IOException {
-
+    public void process(HttpRequest request, HttpContext context) {
       Options options =
           Options.builder()
               .printSingleliner()

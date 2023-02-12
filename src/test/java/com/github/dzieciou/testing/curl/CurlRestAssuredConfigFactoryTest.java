@@ -11,8 +11,6 @@ import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.specification.RequestSpecification;
-import java.io.IOException;
-import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.client.HttpClient;
@@ -26,6 +24,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockserver.client.MockServerClient;
 
+@SuppressWarnings("deprecation") // AbstractHttpClient is deprecated but used by REST-assured
 public class CurlRestAssuredConfigFactoryTest {
 
   private static final int MOCK_PORT = 9999;
@@ -141,13 +140,14 @@ public class CurlRestAssuredConfigFactoryTest {
     }
 
     @Override
-    public void describeTo(Description description) {}
+    public void describeTo(Description description) {
+    }
   }
 
   private static class MyRequestInerceptor implements HttpRequestInterceptor {
 
     @Override
-    public void process(HttpRequest httpRequest, HttpContext httpContext)
-        throws HttpException, IOException {}
+    public void process(HttpRequest httpRequest, HttpContext httpContext) {
+    }
   }
 }
