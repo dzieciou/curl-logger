@@ -11,11 +11,8 @@ import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.specification.RequestSpecification;
-import java.io.IOException;
-import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.HttpContext;
@@ -26,6 +23,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockserver.client.MockServerClient;
 
+@SuppressWarnings("deprecation") // AbstractHttpClient is deprecated but used by REST-assured
 public class CurlRestAssuredConfigFactoryTest {
 
   private static final int MOCK_PORT = 9999;
@@ -54,13 +52,10 @@ public class CurlRestAssuredConfigFactoryTest {
         HttpClientConfig.httpClientConfig()
             .setParam("TestParam", "TestValue")
             .httpClientFactory(
-                new HttpClientConfig.HttpClientFactory() {
-                  @Override
-                  public HttpClient createHttpClient() {
-                    DefaultHttpClient client = new DefaultHttpClient();
-                    client.addRequestInterceptor(new MyRequestInerceptor());
-                    return client;
-                  }
+                () -> {
+                  DefaultHttpClient client = new DefaultHttpClient();
+                  client.addRequestInterceptor(new MyRequestInerceptor());
+                  return client;
                 });
     final RestAssuredConfig config = RestAssuredConfig.config().httpClient(httpClientConfig);
 
@@ -147,7 +142,6 @@ public class CurlRestAssuredConfigFactoryTest {
   private static class MyRequestInerceptor implements HttpRequestInterceptor {
 
     @Override
-    public void process(HttpRequest httpRequest, HttpContext httpContext)
-        throws HttpException, IOException {}
+    public void process(HttpRequest httpRequest, HttpContext httpContext) {}
   }
 }

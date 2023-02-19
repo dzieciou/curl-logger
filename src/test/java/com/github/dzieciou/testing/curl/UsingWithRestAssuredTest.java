@@ -4,7 +4,6 @@ import static io.restassured.RestAssured.config;
 import static io.restassured.RestAssured.given;
 import static io.restassured.config.HttpClientConfig.httpClientConfig;
 import static io.restassured.config.MultiPartConfig.multiPartConfig;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import static org.mockserver.model.HttpRequest.request;
@@ -22,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import org.apache.commons.io.FileUtils;
-import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.client.HttpClient;
@@ -34,8 +32,12 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockserver.client.MockServerClient;
 
+@ExtendWith(MockitoExtension.class)
 public class UsingWithRestAssuredTest {
 
   private static final int MOCK_PORT = 9999;
@@ -44,6 +46,8 @@ public class UsingWithRestAssuredTest {
 
   private static MockServerClient mockServer;
   private static TemporaryFolder tempFolder;
+
+  @Mock public Consumer<String> curlConsumer;
 
   private RestAssuredConfig getRestAssuredConfig(Consumer<String> curlConsumer) {
     return config()
@@ -63,9 +67,6 @@ public class UsingWithRestAssuredTest {
   @Test
   @Tag("end-to-end-samples")
   public void cookiesTest() {
-
-    Consumer<String> curlConsumer = mock(Consumer.class);
-
     given()
         .redirects()
         .follow(false)
@@ -95,9 +96,6 @@ public class UsingWithRestAssuredTest {
   @Test
   @Tag("end-to-end-samples")
   public void cookieWithSpecialCharactersTest() {
-
-    Consumer<String> curlConsumer = mock(Consumer.class);
-
     given()
         .redirects()
         .follow(false)
@@ -133,9 +131,6 @@ public class UsingWithRestAssuredTest {
   @Test
   @Tag("end-to-end-samples")
   public void customizedCookie() {
-
-    Consumer<String> curlConsumer = mock(Consumer.class);
-
     List<Cookie> cookies = new ArrayList<>();
     cookies.add(
         new Cookie.Builder("token", "tokenValue")
@@ -170,9 +165,6 @@ public class UsingWithRestAssuredTest {
   @Test
   @Tag("end-to-end-samples")
   public void basicIntegrationTest() {
-
-    Consumer<String> curlConsumer = mock(Consumer.class);
-
     given()
         .redirects()
         .follow(false)
@@ -191,9 +183,6 @@ public class UsingWithRestAssuredTest {
   @Test
   @Tag("end-to-end-samples")
   public void shouldPrintPostRequestWithMultipartDataProperly() {
-
-    Consumer<String> curlConsumer = mock(Consumer.class);
-
     given()
         .baseUri(MOCK_BASE_URI)
         .port(MOCK_PORT)
@@ -215,9 +204,6 @@ public class UsingWithRestAssuredTest {
   @Test
   @Tag("end-to-end-samples")
   public void shouldPrintBody() {
-
-    Consumer<String> curlConsumer = mock(Consumer.class);
-
     given()
         .baseUri(MOCK_BASE_URI)
         .port(MOCK_PORT)
@@ -238,9 +224,6 @@ public class UsingWithRestAssuredTest {
   @Test
   @Tag("end-to-end-samples")
   public void shouldPrintBodyWithEncoding() {
-
-    Consumer<String> curlConsumer = mock(Consumer.class);
-
     given()
         .baseUri(MOCK_BASE_URI)
         .port(MOCK_PORT)
@@ -263,9 +246,6 @@ public class UsingWithRestAssuredTest {
   @Test
   @Tag("end-to-end-samples")
   public void shouldPrintMultipartWithContentTypesForTypes() {
-
-    Consumer<String> curlConsumer = mock(Consumer.class);
-
     given()
         .baseUri(MOCK_BASE_URI)
         .port(MOCK_PORT)
@@ -285,9 +265,6 @@ public class UsingWithRestAssuredTest {
 
   @Test
   public void shouldPrintMultipartWithMixedType() {
-
-    Consumer<String> curlConsumer = mock(Consumer.class);
-
     given()
         .baseUri(MOCK_BASE_URI)
         .port(MOCK_PORT)
@@ -308,8 +285,6 @@ public class UsingWithRestAssuredTest {
 
   @Test
   public void shouldPrintFileAsBinary() throws IOException {
-    Consumer<String> curlConsumer = mock(Consumer.class);
-
     File tempFile = tempFolder.createFile().toFile();
     FileUtils.writeStringToFile(tempFile, "{ 'message' : 'hello world'}", Charset.defaultCharset());
 
@@ -331,8 +306,6 @@ public class UsingWithRestAssuredTest {
 
   @Test
   public void shouldPrintForm() {
-    Consumer<String> curlConsumer = mock(Consumer.class);
-
     given()
         .baseUri(MOCK_BASE_URI)
         .port(MOCK_PORT)
@@ -354,9 +327,6 @@ public class UsingWithRestAssuredTest {
   @Test
   @Tag("end-to-end-samples")
   public void shouldPrintPut() {
-
-    Consumer<String> curlConsumer = mock(Consumer.class);
-
     given()
         .redirects()
         .follow(false)
@@ -409,9 +379,7 @@ public class UsingWithRestAssuredTest {
     }
 
     @Override
-    public void process(HttpRequest request, HttpContext context)
-        throws HttpException, IOException {
-
+    public void process(HttpRequest request, HttpContext context) {
       Options options =
           Options.builder()
               .printSingleliner()
