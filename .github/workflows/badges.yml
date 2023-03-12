@@ -1,11 +1,11 @@
-name: build
+name: Coverage
 
 on:
-  push:
-    branches: [ feature/code-coverage ]
+  pull_request:
+    branches: [ master ]
 
 jobs:
-  build:
+  coverage:
     runs-on: ubuntu-latest
 
     steps:
