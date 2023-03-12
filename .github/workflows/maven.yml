@@ -38,5 +38,5 @@ jobs:
       - name: Upload code coverage
         uses: actions/upload-artifact@v3
         with:
-          name: jacoco-${{ runner.os }}-{{ runner.java-version }}
+          name: jacoco-${{ runner.os }}-${{ runner.java-version }}
           path: target/site/jacoco/
