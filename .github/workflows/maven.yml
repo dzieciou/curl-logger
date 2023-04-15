@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-18.04]
+        os: [ubuntu-latest]
         java-version: [ 8, 9, 10, 11, 12, 13, 14, 15, 16, 17-ea ]
       max-parallel: 4
     name: Test JDK ${{ matrix.java-version }}, ${{ matrix.os }}
