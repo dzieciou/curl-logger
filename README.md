@@ -1,6 +1,6 @@
 # CURL Logger
 
-[![Tests Status](https://github.com/dzieciou/curl-logger/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/dzieciou/curl-logger/actions/workflows/test.yml?branch=master)
+[![Tests Status](https://github.com/dzieciou/curl-logger/actions/workflows/test.yml/badge.svg?branch=master)](Latest test ressults on a master branch)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.dzieciou.testing/curl-logger/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.dzieciou.testing/curl-logger)
 ![Line coverage](.github/badges/jacoco.svg)
 ![Branch coverage](.github/badges/branches.svg)
