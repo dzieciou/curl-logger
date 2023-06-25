@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.dzieciou.testing</groupId>
     <artifactId>curl-logger</artifactId>
-    <version>2.1.4-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <url>https://github.com/dzieciou/curl-logger</url>
     <name>com.github.dzieciou.testing:curl-logger</name>
@@ -36,7 +36,7 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <junit.jupiter.version>5.9.3</junit.jupiter.version>
-        <junit.platform.version>1.9.2</junit.platform.version>
+        <junit.platform.version>1.9.3</junit.platform.version>
         <rest-assured.version>5.3.0</rest-assured.version>
     </properties>
 
@@ -83,7 +83,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>4.11.0</version>
+            <version>5.1.1</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -106,7 +106,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>3.12.1</version>
+            <version>5.1.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>

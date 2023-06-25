@@ -327,7 +327,7 @@ given()
 
 ## Prerequisities
 
-* JDK 8 or higher
+* JDK 11 or higher
 * Dependencies with which I tested the solution
 
 ```xml
