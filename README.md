@@ -1,6 +1,6 @@
 # CURL Logger
 
-[![Tests Status](https://github.com/dzieciou/curl-logger/actions/workflows/maven.yml/badge.svg?branch=master)](https://github.com/dzieciou/curl-logger/actions/workflows/maven.yml?branch=master)
+[![Tests Status](https://github.com/dzieciou/curl-logger/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/dzieciou/curl-logger/actions/workflows/test.yml/badge.svg?branch=master)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.dzieciou.testing/curl-logger/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.dzieciou.testing/curl-logger)
 ![Line coverage](.github/badges/jacoco.svg)
 ![Branch coverage](.github/badges/branches.svg)
@@ -327,7 +327,7 @@ given()
 
 ## Prerequisities
 
-* JDK 8 or higher
+* JDK 11 or higher
 * Dependencies with which I tested the solution
 
 ```xml
