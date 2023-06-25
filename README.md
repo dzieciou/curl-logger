@@ -34,7 +34,7 @@ Latest release:
 <dependency>
   <groupId>com.github.dzieciou.testing</groupId>
   <artifactId>curl-logger</artifactId>
-  <version>2.1.2</version>
+  <version>3.0.0</version>
 </dependency>
 ```
    
