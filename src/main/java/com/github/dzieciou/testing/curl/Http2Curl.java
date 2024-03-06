@@ -54,6 +54,7 @@ import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
 import org.apache.http.client.methods.HttpRequestWrapper;
 import org.apache.http.entity.mime.FormBodyPart;
+import org.apache.http.entity.mime.MinimalField;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.impl.client.RequestWrapper;
@@ -310,40 +311,49 @@ public class Http2Curl {
   }
 
   private void handlePart(FormBodyPart bodyPart, CurlCommand curl) {
-    String contentDisposition =
-        bodyPart.getHeader().getFields().stream()
-            .filter(f -> f.getName().equals("Content-Disposition"))
-            .findFirst()
-            .orElseThrow(() -> new RuntimeException("Multipart missing Content-Disposition header"))
-            .getBody();
+    String contentDisposition = getBodyPartHeader(bodyPart, "Content-Disposition").getBody();
 
-    List<String> elements = Arrays.asList(contentDisposition.split(";"));
-    Map<String, String> map =
-        elements.stream()
-            .map(s -> s.trim().split("="))
-            .collect(Collectors.toMap(a -> a[0], a -> a.length == 2 ? a[1] : ""));
+    Map<String, String> contentDispositionKeyValues = parseContentDisposition(contentDisposition);
 
-    if (map.containsKey("form-data")) {
-
-      String partName = removeQuotes(map.get("name"));
-
-      StringBuilder partContent = new StringBuilder();
-      if (map.get("filename") != null) {
-        partContent.append("@").append(removeQuotes(map.get("filename")));
-      } else {
-        try {
-          partContent.append(getContent(bodyPart));
-        } catch (IOException e) {
-          throw new RuntimeException("Could not read content of the part", e);
-        }
-      }
-      partContent.append(";type=").append(bodyPart.getHeader().getField("Content-Type").getBody());
-
-      curl.addFormPart(partName, partContent.toString());
-
-    } else {
-      throw new RuntimeException("Unsupported type " + map.entrySet().stream().findFirst().get());
+    if (!contentDispositionKeyValues.containsKey("form-data")) {
+      throw new RuntimeException("Content-Disposition header does not contain: form-data");
     }
+    if (!contentDispositionKeyValues.containsKey("name")) {
+      throw new RuntimeException("Content-Disposition header does not contain: name");
+    }
+
+    String partName = removeQuotes(contentDispositionKeyValues.get("name"));
+    StringBuilder partContent = new StringBuilder();
+    if (contentDispositionKeyValues.get("filename") != null) {
+      partContent.append("@").append(removeQuotes(contentDispositionKeyValues.get("filename")));
+    } else {
+      try {
+        partContent.append(getContent(bodyPart));
+      } catch (IOException e) {
+        throw new RuntimeException("Could not read content of the part", e);
+      }
+    }
+    partContent.append(";type=").append(bodyPart.getHeader().getField("Content-Type").getBody());
+
+    curl.addFormPart(partName, partContent.toString());
+  }
+
+  private static Map<String, String> parseContentDisposition(String contentDisposition) {
+    List<String> contentDispositionElements = Arrays.asList(contentDisposition.split(";"));
+    Map<String, String> contentDispositionKeyValues1 =
+        contentDispositionElements.stream()
+            .map(kv -> kv.trim().split("="))
+            .collect(Collectors.toMap(kv -> kv[0], kv -> kv.length == 2 ? kv[1] : ""));
+    Map<String, String> contentDispositionKeyValues = contentDispositionKeyValues1;
+    return contentDispositionKeyValues;
+  }
+
+  private static MinimalField getBodyPartHeader(FormBodyPart bodyPart, String headerName) {
+    return bodyPart.getHeader().getFields().stream()
+        .filter(f -> f.getName().equals(headerName))
+        .findFirst()
+        .orElseThrow(
+            () -> new RuntimeException(String.format("Multipart missing {} header", headerName)));
   }
 
   private void handleNotIgnoredHeaders(Headers headers, CurlCommand curl) {
